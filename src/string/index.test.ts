@@ -317,6 +317,36 @@ describe("factories", () => {
 
 		});
 
+		it("returns a shape with browsable variant", async () => {
+
+			expect(iri({ variant: "browsable" }).pattern).toBe("^[hH][tT][tT][pP][sS]?:\\/\\/[^\\/?#\\s]\\S*$");
+
+		});
+
+		it("admits only http and https links with the browsable variant", async () => {
+
+			const matches = (value: string) => new RegExp(iri({ variant: "browsable" }).pattern ?? "").test(value);
+
+			expect(matches("http://example.org/")).toBe(true);
+			expect(matches("https://example.org/path?query#fragment")).toBe(true);
+			expect(matches("HTTPS://example.org/")).toBe(true);
+			expect(matches("https://example.org/città")).toBe(true);
+
+			expect(matches("ftp://example.org/")).toBe(false);
+			expect(matches("mailto:user@example.org")).toBe(false);
+			expect(matches("httpx://example.org/")).toBe(false);
+			expect(matches("/path")).toBe(false);
+			expect(matches("https://example.org/a b")).toBe(false);
+
+			expect(matches("http:path")).toBe(false);
+			expect(matches("http:/path")).toBe(false);
+			expect(matches("http:///path")).toBe(false);
+			expect(matches("https:/")).toBe(false);
+			expect(matches("https://")).toBe(false);
+			expect(matches("https://?query")).toBe(false);
+
+		});
+
 		it("returns a shape with hierarchical variant", async () => {
 
 			expect(iri({ variant: "hierarchical" }).pattern).toBe("^[a-zA-Z][a-zA-Z0-9+.-]*:\\/\\S*$");

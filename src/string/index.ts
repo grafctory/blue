@@ -159,6 +159,7 @@ import { assemble } from "./assembler.js";
  */
 const IRIPatterns: Readonly<Record<Variant, RegExp>> = {
 
+	browsable: /^[hH][tT][tT][pP][sS]?:\/\/[^\/?#\s]\S*$/,
 	hierarchical: /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\S*$/,
 	absolute: /^[a-zA-Z][a-zA-Z0-9+.-]*:\S+$/,
 	internal: /^(?:[a-zA-Z][a-zA-Z0-9+.-]*:\S+|\/\S*)$/,
@@ -552,12 +553,13 @@ export function phone<const C extends StringValueConstraints = {}>(constraints?:
  *
  * Fixes the datatype to `xsd:string`. IRIs generalise URIs (RFC 3986) and URLs by admitting the full Unicode character
  * set beyond ASCII; the {@link Variant | variant} states which subset of the IRI hierarchy is accepted:
- * `hierarchical` (URLs/IRLs with authority), `absolute` (scheme-based URIs/IRIs), `internal` (absolute or
- * root-relative), or `relative` (any valid reference, the default).
+ * `browsable` (HTTP and HTTPS links a browser can open), `hierarchical` (a scheme followed by an absolute path, with
+ * or without authority), `absolute` (scheme-based URIs/IRIs), `internal` (absolute or root-relative), or `relative`
+ * (any valid reference, including relative paths such as `../path` or `path`; the default).
  *
- * As a limitation, variants are told apart by their scheme and leading slashes rather than parsed against the full
- * RFC 3987 grammar: `relative` admits any whitespace-free sequence, and the stricter variants check the prefix alone,
- * leaving the rest of the reference unvalidated.
+ * As a limitation, variants are told apart by their prefix rather than parsed against the full RFC 3987 grammar: the
+ * scheme, the leading slashes and, for `browsable`, the presence of a host. `relative` admits any whitespace-free
+ * sequence, and the stricter variants leave the rest of the reference unvalidated.
  *
  * @typeParam C The stated constraints
  *
@@ -592,9 +594,10 @@ export function iri<const C extends StringValueConstraints & {
 /**
  * Creates a shape for hierarchical URL values.
  *
- * Fixes the datatype to `xsd:string` and admits only URLs with a scheme and an authority component (for example,
- * `https://example.net/path`), as {@link iri} does with `variant: "hierarchical"` and under the same limitation: the
- * scheme and the leading slashes are checked, the rest of the URL is not.
+ * Fixes the datatype to `xsd:string` and admits only URLs with a scheme and an absolute path, authority optional (for
+ * example, `https://example.net/path` or `base:/path`), as {@link iri} does with `variant: "hierarchical"` and under
+ * the same limitation: only the scheme and the leading slash are checked. Page addresses a browser can open take
+ * {@link iri} with `variant: "browsable"` instead, which admits only HTTP and HTTPS links.
  *
  * @typeParam C The stated constraints
  *

@@ -7,6 +7,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.14.0](https://github.com/metreeca/blue/compare/v0.13.1...HEAD)
 
+### Added
+
+- Add the `browsable` variant to `iri()`, admitting only `http:` and `https:` links a browser can open, for members
+  that must hold a page address rather than any hierarchical identifier such as `base:/path`
+
 ### Changed
 
 - Admit a `foreign` or `captive` facet on a member overriding one its parent left unstated, rather than rejecting any
