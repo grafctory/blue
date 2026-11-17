@@ -14,13 +14,16 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Changed
 
-- Admit a `foreign` or `captive` facet on a member overriding one its parent left unstated, rather than rejecting any
-  facet the parent doesn't state: a facet stated on one side alone is carried into the merged member, and one stated
-  on both sides must still be stated alike; an override stating a mapping must now state both `forward` and
-  `reverse` as its parent does, rather than silently inheriting the one it leaves out
+- **Breaking**: Upgrade `@metreeca/core` to `^0.14.0` and `@metreeca/qest` to `^0.14.0`; projects using them alongside
+  this package raise their own ranges as well, so that each of them is shared as a single copy across the project
 - Let a member override replace the `name` and `description` it inherits, rather than repeating the parent's
   wording: the extending shape labels and describes the member in its own terms, and the parent keeps its own; parents
   disagreeing on either now require the extending shape to state it ([#43](https://github.com/metreeca/blue/issues/43))
+- Admit a `foreign` or `captive` facet on a member overriding one its parent left unstated, rather than rejecting any
+  facet the parent doesn't state: a facet stated on one side alone is carried into the merged member, and one stated
+  on both sides must still be stated alike by the override and the parent it narrows, as in earlier releases
+- **Breaking**: Require a member override stating a mapping to state both `forward` and `reverse` as its parent does,
+  rather than silently inheriting the one it leaves out: add the missing side to overrides stating only one of them
 
 ### Fixed
 
@@ -33,15 +36,13 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   text wherever any variant admits it ([#35](https://github.com/metreeca/blue/issues/35))
 - Accept an ordering (`^`) or sort focus (`+`) naming a grouping key of a projection even if the member it reaches is
   multi-valued: a grouping key holds one value per group, so `validateTemplate` no longer rejects it as unrankable
-- Keep the lower bound `effective` resolves for a piped probe wherever the pipe always reaches a value: a transform
-  applied value by value keeps the bounds, and an aggregate keeps a lower bound of one or more at one, leaving it
+- Keep the lower bound `effective` resolves for a piped probe wherever the pipe always reaches a value, leaving it
   unstated only where the pipe may drop an alternative, read a localised value through negotiation, or extract a
-  temporal component the value doesn't state, as `hours` does from a date ([#37](https://github.com/metreeca/blue/issues/37))
-- Resolve a member stated by several extended shapes to the narrowest definition whatever order the shapes are listed
-  in, at runtime and in the inferred types alike, rather than letting an earlier shape override the later ones at
-  runtime and the last one settle the inferred range: a redeclaration is now held to every extended shape, shapes no
-  single definition narrows are rejected unless the child redeclares the member, and a member two shapes give
-  different cardinalities is inferred at the tighter one rather than voided ([#38](https://github.com/metreeca/blue/issues/38))
+  temporal component the value doesn't state, as `hours` from a date ([#37](https://github.com/metreeca/blue/issues/37))
+- **Breaking**: Resolve a member stated by several extended shapes to the narrowest definition whatever order the
+  shapes are listed in, at runtime and in the inferred types alike, rather than letting the listing order settle it; a
+  redeclaration is now held to every extended shape, and a member no single inherited definition narrows is rejected:
+  redeclare it on the extending shape, narrowing every parent ([#38](https://github.com/metreeca/blue/issues/38))
 - Accept a `/*` wildcard standing alone on the root path of an identifier `pattern`, admitting every identifier under
   the origin, and a pattern closed by a trailing `/`, matching only the container identifier ending in that slash;
   `resource()` now rejects a malformed pattern when the shape is declared, rather than leaving the `TypeError` to the
@@ -49,8 +50,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Keep an embedded resource shape inherited alike along several paths as declared, rather than copying it at each
   merge, so that `model()` lists it once and consumers comparing shapes by reference see a single shape, as a diamond
   inheriting one declaration does ([#42](https://github.com/metreeca/blue/issues/42))
-- Key the trace `validate` returns by the member or slot at fault, as documented, rather than nesting it under the
-  identifier or position of the validated value: callers locate a violation without unwrapping a level of their own
+- **Breaking**: Key the trace `validate` returns by the member or slot at fault, as documented, rather than nesting it
+  under the identifier or position of the validated value: callers reading `trace[id][member]` now read `trace[member]`
 
 ## [0.13.1](https://github.com/metreeca/blue/compare/v0.13.0...v0.13.1) - 2026-10-22
 
