@@ -806,6 +806,16 @@ describe("validate", () => {
 
 		});
 
+		it("keys the trace by the member at fault rather than by the resource", async () => {
+
+			expect(trace(validate({ name: 42 }, { shape: Product })))
+				.toEqual([{ name: expect.anything() }]);
+
+			expect(trace(validate({ id: "base:/products/1", name: 42 }, { shape: Product })))
+				.toEqual([{ name: expect.anything() }]);
+
+		});
+
 		it("reports a member the shape doesn't declare", async () => {
 
 			expect(trace(validate({ name: "Widget", unknown: "x" }, { shape: Product }))).toBeDefined();
@@ -1040,6 +1050,13 @@ describe("validate", () => {
 
 		});
 
+		it("keys the trace by the member at fault rather than by the resource", async () => {
+
+			expect(trace(validate({ id: "base:/products/1", name: 42 }, { shape: Product, model: { id: {}, name: {} } })))
+				.toEqual([{ name: expect.anything() }]);
+
+		});
+
 		it("holds the resource to the identifier it is expected to be named by", async () => {
 
 			const retrieved = { id: "base:/products/1" };
@@ -1210,6 +1227,13 @@ describe("validate", () => {
 		it("reports a slot naming a member the shape doesn't declare", async () => {
 
 			expect(trace(validate({ unknown: {} }, { shape: Product, model: true }))).toBeDefined();
+
+		});
+
+		it("keys the trace by the slot at fault rather than by the template", async () => {
+
+			expect(trace(validate({ unknown: {} }, { shape: Product, model: true })))
+				.toEqual([{ unknown: expect.anything() }]);
 
 		});
 

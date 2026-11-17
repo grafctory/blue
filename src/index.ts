@@ -762,12 +762,19 @@ export function validate(value: unknown, {
 
 		const settled = sealed !== undefined && sealed.shape === terms.shape && match(sealed);
 
-		const trace = settled ? undefined : check();
+		const trace = settled ? undefined : opt(check(), unkeyed);
 
 		return trace !== undefined ? createRelay({ trace })
 			: settled ? createRelay({ value })
 				: createRelay({ value: seal(content(), Validated, terms) });
 
+	}
+
+	/**
+	 * Keys the violations of the single value validated by the member or slot at fault rather than by the value.
+	 */
+	function unkeyed(trace: Trace): Trace {
+		return trace.flatMap(entry => isString(entry) ? [entry] : Object.values(entry).flat());
 	}
 
 }

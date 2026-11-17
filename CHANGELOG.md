@@ -49,6 +49,8 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Keep an embedded resource shape inherited alike along several paths as declared, rather than copying it at each
   merge, so that `model()` lists it once and consumers comparing shapes by reference see a single shape, as a diamond
   inheriting one declaration does ([#42](https://github.com/metreeca/blue/issues/42))
+- Key the trace `validate` returns by the member or slot at fault, as documented, rather than nesting it under the
+  identifier or position of the validated value: callers locate a violation without unwrapping a level of their own
 
 ## [0.13.1](https://github.com/metreeca/blue/compare/v0.13.0...v0.13.1) - 2026-10-22
 
