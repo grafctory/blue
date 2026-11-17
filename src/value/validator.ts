@@ -30,23 +30,11 @@ import { validateBoolean } from "../boolean/validator.js";
 import { validateDictionary } from "../dictionary/validator.js";
 import { validateNumber } from "../number/validator.js";
 import { validateReference } from "../reference/validator.js";
+import { isPattern } from "../resource/assembler.js";
 import { validateResource } from "../resource/validator.js";
 import { validateString } from "../string/validator.js";
 import { validateUnion } from "../union/validator.js";
 import type { Shape } from "./index.js";
-
-
-/**
- * The form an identifier pattern is stated in.
- */
-const PatternFormat = new RegExp("^"
-	+"(?:[a-zA-Z][a-zA-Z0-9+.-]*://[^/]+)?" // optional scheme://authority
-	+"/(?:" // root path, followed by either
-	+"(?:[^/{}*]+|\\{\\w+})(?:/(?:[^/{}*]+|\\{\\w+}))*(?:/\\*|/)?" // segments with {name} placeholders, closed by /* or /
-	+"|\\*" // or a wildcard on the root path
-	+")?"
-	+"$"
-);
 
 
 
@@ -157,18 +145,6 @@ export function validateShape(values: readonly unknown[], shape: Shape, {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-/**
- * Checks whether a string is a well-formed identifier pattern, as accepted by {@link match}.
- *
- * @param value The string to check
- *
- * @returns `true` where `value` is an absolute or root-relative path of literal segments and `{name}` placeholders,
- *     optionally closed by `/` or by a `/*` wildcard; the wildcard may also stand alone on the root path
- */
-export function isPattern(value: string): boolean {
-	return PatternFormat.test(value);
-}
 
 /**
  * Checks whether an identifier matches a pattern.

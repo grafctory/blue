@@ -57,7 +57,6 @@ import type { Property, ResourceShape } from "./index.js";
 import { getModelBranches, getShapeBranches } from "../union/index.js";
 import { checkBound, checkOption, isTemplateModel } from "../union/validator.js";
 import { getShapeTarget } from "../reference/index.js";
-import { getShapeId } from "./accessors.js";
 
 
 /**
@@ -1349,7 +1348,7 @@ function checkId(shape: ResourceShape): Optional<Trace> {
 
 	return all(...Object.entries(shape.members)
 		.flatMap(([name, member]) => member.kind === "property" ? getShapeBranches(member.range.shape)
-			.filter(branch => branch.kind === "resource" && getShapeId(branch) !== undefined)
+			.filter(branch => branch.kind === "resource" && named(branch) !== undefined)
 			.map(() => fail([`{id} unexpected identifier in the resource embedded under <${name}>`]))
 			: []
 		)
@@ -1529,10 +1528,23 @@ function classifier(value: unknown, shape: ResourceShape): Optional<Trace> {
  */
 function key(value: Record<string, unknown>, shape: ResourceShape, index: number): string {
 
-	const id = getShapeId(shape);
+	const id = named(shape);
 	const iri = id === undefined ? undefined : value[id];
 
 	return isReference(iri) ? `<${iri}>` : `${index}`;
+
+}
+
+/**
+ * Resolves the name a resource states its identifier under.
+ *
+ * @param shape The shape to inspect
+ *
+ * @returns The name of the id member of `shape`, or `undefined` where it declares none
+ */
+function named(shape: ResourceShape): Optional<Identifier> {
+
+	return Object.entries(shape.members).find(([, member]) => member.kind === "id")?.[0];
 
 }
 

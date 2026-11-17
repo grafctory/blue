@@ -41,10 +41,9 @@ import { dedent, tidy } from "@metreeca/core/strings";
 import { equals, immutable, seal } from "@metreeca/core/values";
 import { all, fail, test, type Trace } from "@metreeca/core/trace";
 import { type Dictionary, type Reference } from "@metreeca/qest/state";
-import { eager } from "../value/accessors.js";
+import { eager } from "../value/index.js";
 import { mergeShape, narrowsShape, reject } from "../value/assembler.js";
 import type { Shape } from "../value/index.js";
-import { isPattern } from "../value/validator.js";
 import type {
 	Member,
 	Members,
@@ -61,6 +60,18 @@ import { assemble as assembleUnion } from "../union/assembler.js";
  * The seal marking a shape as already merged.
  */
 const Flattened = Symbol("flattened");
+
+/**
+ * The form an identifier pattern is stated in.
+ */
+const PatternFormat = new RegExp("^"
+	+"(?:[a-zA-Z][a-zA-Z0-9+.-]*://[^/]+)?" // optional scheme://authority
+	+"/(?:" // root path, followed by either
+	+"(?:[^/{}*]+|\\{\\w+})(?:/(?:[^/{}*]+|\\{\\w+}))*(?:/\\*|/)?" // segments with {name} placeholders, closed by /* or /
+	+"|\\*" // or a wildcard on the root path
+	+")?"
+	+"$"
+);
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -496,6 +507,19 @@ function mergeMembers(shape: ResourceShape, parents: readonly ResourceShape[]): 
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+ * Checks whether a string is a well-formed identifier {@link ResourceConstraints.pattern | pattern}.
+ *
+ * @param value The string to check
+ *
+ * @returns `true` where `value` is an absolute or root-relative path of literal segments and `{name}` placeholders,
+ *     optionally closed by `/` or by a `/*` wildcard; the wildcard may also stand alone on the root path
+ */
+export function isPattern(value: string): boolean {
+	return PatternFormat.test(value);
+}
+
 
 /**
  * Checks a set of resource constraints for internal consistency.
