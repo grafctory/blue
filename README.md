@@ -338,7 +338,7 @@ up the collection property by name.
 ## Validating Resources
 
 The overloaded `validate` function checks a value against a schema and returns a
-[Relay](https://metreeca.github.io/core/types/relay.Relay.html) that dispatches to either a `value` or `trace` handler:
+[Relay](https://metreeca.github.io/core/interfaces/relay.Relay.html) that dispatches to either a `value` or `trace` handler:
 
 ```ts
 import { validate } from "@metreeca/blue";
