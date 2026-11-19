@@ -7,6 +7,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.15.0](https://github.com/metreeca/blue/compare/v0.14.0...HEAD)
 
+### Changed
+
+- **Breaking**: Upgrade `@metreeca/qest` to `^0.15.0`; projects using it alongside this package raise their own range
+  as well, so that it is shared as a single copy across the project rather than installed once per consumer
+
 ## [0.14.0](https://github.com/metreeca/blue/compare/v0.13.1...v0.14.0) - 2026-11-17
 
 ### Added
