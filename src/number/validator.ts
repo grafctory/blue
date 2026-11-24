@@ -24,10 +24,10 @@
  * @module
  */
 
-import { isNumber, type Optional } from "@metreeca/core";
-import { isAtomic } from "@metreeca/qest/model";
+import { isNumber, type Optional } from "@grafctory/core";
+import { isAtomic } from "@grafctory/qest/model";
 import { all, array, domain, gt, gte, integer, lt, lte, type Trace, type, type Validator, values as contains }
-	from "@metreeca/core/trace";
+	from "@grafctory/core/trace";
 import { type Scope, scoped } from "../value/validator.js";
 import { type NumberShape } from "./index.js";
 

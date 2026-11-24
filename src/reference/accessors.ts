@@ -25,7 +25,7 @@
  * @module
  */
 
-import { type Lazy, type Optional } from "@metreeca/core";
+import { type Lazy, type Optional } from "@grafctory/core";
 import type { ResourceShape } from "../resource/index.js";
 import { eager, type Shape } from "../value/index.js";
 
@@ -42,7 +42,7 @@ import { eager, type Shape } from "../value/index.js";
  * @returns The resource shape `shape` points at, merged with the shapes it extends, or `undefined` where it points at
  *     none
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where a deferred definition reaches itself with no link to
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where a deferred definition reaches itself with no link to
  *     break the cycle, or where a deferred target doesn't narrow the target of the link it overrides
  */
 export function getShapeTarget(shape: Lazy<Shape>): Optional<ResourceShape> {

@@ -43,7 +43,7 @@
  * **Defining boolean shapes**
  *
  * ```typescript
- * import { boolean } from '@metreeca/blue/boolean';
+ * import { boolean } from '@grafctory/blue/boolean';
  *
  * const flag = boolean();                 // either truth value
  * const settled = boolean({ in: true });  // the single admitted value
@@ -58,8 +58,8 @@
  * **Using in resource shapes**
  *
  * ```typescript
- * import { optional, required, resource } from '@metreeca/blue/resource';
- * import { boolean } from '@metreeca/blue/boolean';
+ * import { optional, required, resource } from '@grafctory/blue/resource';
+ * import { boolean } from '@grafctory/blue/boolean';
  *
  * const Product = resource({
  *   available: required(boolean()),
@@ -70,10 +70,10 @@
  * **Tagging the alternatives of a union**
  *
  * ```typescript
- * import { boolean } from '@metreeca/blue/boolean';
- * import { date } from '@metreeca/blue/string';
- * import { required, resource } from '@metreeca/blue/resource';
- * import { union } from '@metreeca/blue/union';
+ * import { boolean } from '@grafctory/blue/boolean';
+ * import { date } from '@grafctory/blue/string';
+ * import { required, resource } from '@grafctory/blue/resource';
+ * import { union } from '@grafctory/blue/union';
  *
  * const Payment = union(
  *   resource({ settled: required(boolean(false)), due: required(date()) }),
@@ -90,7 +90,7 @@
  * @see {@link https://www.w3.org/TR/xmlschema-2/#boolean XSD 1.0 Part 2: Datatypes § 3.2.2 boolean}
  */
 
-import { isBoolean } from "@metreeca/core";
+import { isBoolean } from "@grafctory/core";
 import type { Legal } from "../value/inference.js";
 import { assemble } from "./assembler.js";
 

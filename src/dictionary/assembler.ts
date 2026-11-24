@@ -25,9 +25,9 @@
  * @module
  */
 
-import { type Optional } from "@metreeca/core";
-import { immutable } from "@metreeca/core/values";
-import { all, test, type Trace } from "@metreeca/core/trace";
+import { type Optional } from "@grafctory/core";
+import { immutable } from "@grafctory/core/values";
+import { all, test, type Trace } from "@grafctory/core/trace";
 import { reject } from "../value/assembler.js";
 import { type DictionaryConstraints, type DictionaryShape } from "./index.js";
 
@@ -44,7 +44,7 @@ import { type DictionaryConstraints, type DictionaryShape } from "./index.js";
  *
  * @returns An immutable shape admitting the language maps the constraints bound
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  */
 export function assemble<U extends undefined | boolean>(constraints: DictionaryConstraints): DictionaryShape & {
 	readonly uniqueLang: U
@@ -120,7 +120,7 @@ export function narrowsDictionary(target: DictionaryShape, source: DictionarySha
  *
  * @returns An immutable shape admitting the language maps both `target` and `source` admit
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `target` doesn't narrow `source`
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `target` doesn't narrow `source`
  */
 export function mergeDictionary(target: DictionaryShape, source: DictionaryShape): DictionaryShape {
 

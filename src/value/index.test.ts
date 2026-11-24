@@ -37,10 +37,10 @@ import { describe, expect, test } from "vitest";
  *   is the situation of a dependent compiling against published declarations, so each probe gets a program of its own
  *   and reads the shapes before they are declared, the order the collapse needs within a single file;
  * - the probe compiles against declaration files: the package declarations are emitted in memory from the sources,
- *   as the build would emit them, and the probe resolves `@metreeca/blue/*` to them, so it reads the shapes exactly as
+ *   as the build would emit them, and the probe resolves `@grafctory/blue/*` to them, so it reads the shapes exactly as
  *   a dependent does without depending on a prior build;
  * - the fixture stays virtual: the declarations and the probe are served through a compiler host override at paths
- *   under the package, so that `@metreeca/core` and the other dependencies resolve from the package's `node_modules`
+ *   under the package, so that `@grafctory/core` and the other dependencies resolve from the package's `node_modules`
  *   while no file is written to `src` or `dist`, where the build and the docs would pick it up.
  *
  * Without the fix, the `State` probe and the lookup contract probe fail with `{}` leaves; the others hold either way
@@ -54,12 +54,12 @@ const emitted=`${root}.declared`; // virtual: resolved under the package, never 
 const probe=new URL("index.probe.ts", import.meta.url).pathname; // virtual: resolved under the package, never written
 
 const imports=`
-	import type { Lazy } from "@metreeca/core";
-	import { reference, type ReferenceShape } from "@metreeca/blue/reference";
-	import type { Id, PropertyConstraints, ResourceShape } from "@metreeca/blue/resource";
-	import type { text } from "@metreeca/blue/string";
-	import type { UnionShape } from "@metreeca/blue/union";
-	import type { Range, Shape, State, Match, Frame, Items, Draft, Model, Slice } from "@metreeca/blue/value";
+	import type { Lazy } from "@grafctory/core";
+	import { reference, type ReferenceShape } from "@grafctory/blue/reference";
+	import type { Id, PropertyConstraints, ResourceShape } from "@grafctory/blue/resource";
+	import type { text } from "@grafctory/blue/string";
+	import type { UnionShape } from "@grafctory/blue/union";
+	import type { Range, Shape, State, Match, Frame, Items, Draft, Model, Slice } from "@grafctory/blue/value";
 `;
 
 /*
@@ -86,7 +86,7 @@ const options: ts.CompilerOptions={
 	target: ts.ScriptTarget.ES2022,
 	module: ts.ModuleKind.NodeNext,
 	moduleResolution: ts.ModuleResolutionKind.NodeNext,
-	paths: { "@metreeca/blue/*": [`${emitted}/*/index.d.ts`] }
+	paths: { "@grafctory/blue/*": [`${emitted}/*/index.d.ts`] }
 };
 
 const declarations=declare();

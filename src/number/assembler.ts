@@ -25,9 +25,9 @@
  * @module
  */
 
-import { type Optional } from "@metreeca/core";
-import { immutable } from "@metreeca/core/values";
-import { all, test, type Trace } from "@metreeca/core/trace";
+import { type Optional } from "@grafctory/core";
+import { immutable } from "@grafctory/core/values";
+import { all, test, type Trace } from "@grafctory/core/trace";
 import { checkDomain, intersect, narrowsDatatype, narrowsDomain, reject, unite } from "../value/assembler.js";
 import { type NumberConstraints, type NumberShape } from "./index.js";
 
@@ -84,7 +84,7 @@ const Limits: readonly (readonly [Bound, (limit: number, inherited: number) => b
  *
  * @returns An immutable shape admitting the numbers the constraints bound
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  */
 export function assemble<V extends number>(constraints: NumberConstraints): NumberShape<V> {
 
@@ -242,7 +242,7 @@ export function narrowsNumber(target: NumberShape, source: NumberShape): Optiona
  *
  * @returns An immutable shape admitting the values both `target` and `source` admit
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `target` doesn't narrow `source`
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `target` doesn't narrow `source`
  */
 export function mergeNumber(target: NumberShape, source: NumberShape): NumberShape {
 

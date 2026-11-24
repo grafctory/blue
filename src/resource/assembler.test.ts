@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { createNamespace } from "@metreeca/core/resource";
-import { TraceError, type Validator } from "@metreeca/core/trace";
-import type { Resource } from "@metreeca/qest/state";
+import { createNamespace } from "@grafctory/core/resource";
+import { TraceError, type Validator } from "@grafctory/core/trace";
+import type { Resource } from "@grafctory/qest/state";
 import { describe, expect, it } from "vitest";
 import { boolean } from "../boolean/index.js";
 import { number } from "../number/index.js";

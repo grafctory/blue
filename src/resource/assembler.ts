@@ -34,13 +34,13 @@ import {
 	type Lazy,
 	opt as fold,
 	type Optional
-} from "@metreeca/core";
-import { unique, union } from "@metreeca/core/arrays";
-import { base, isIRI, type Namespace } from "@metreeca/core/resource";
-import { dedent, tidy } from "@metreeca/core/strings";
-import { equals, immutable, seal } from "@metreeca/core/values";
-import { all, fail, test, type Trace } from "@metreeca/core/trace";
-import { type Dictionary, type Reference } from "@metreeca/qest/state";
+} from "@grafctory/core";
+import { unique, union } from "@grafctory/core/arrays";
+import { base, isIRI, type Namespace } from "@grafctory/core/resource";
+import { dedent, tidy } from "@grafctory/core/strings";
+import { equals, immutable, seal } from "@grafctory/core/values";
+import { all, fail, test, type Trace } from "@grafctory/core/trace";
+import { type Dictionary, type Reference } from "@grafctory/qest/state";
 import { eager } from "../value/index.js";
 import { mergeShape, narrowsShape, reject } from "../value/assembler.js";
 import type { Shape } from "../value/index.js";
@@ -88,7 +88,7 @@ const PatternFormat = new RegExp("^"
  *
  * @returns An immutable shape admitting the resources the members and constraints bound
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated declarations are inconsistent with the
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated declarations are inconsistent with the
  *     inherited ones
  * @throws {@link !TypeError TypeError} Where a lone declaration lists neither members nor constraints, of two
  *     declarations the last lists something other than members or the first something other than constraints, or
@@ -341,7 +341,7 @@ export function declare<M>(member: Record<string, unknown>): M {
  *
  * @returns An immutable shape stating the inherited definitions alongside its own
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated declarations are inconsistent with the
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated declarations are inconsistent with the
  *     inherited ones or with each other, where the extended shapes conflict on a field or member the shape leaves
  *     unstated, or where a member admitting literals states a reverse mapping, as a literal can't be a subject
  */
@@ -460,7 +460,7 @@ export function flatten(shape: ResourceShape): ResourceShape {
  *
  * @returns The merged members, each admitting the values every definition stated for it admits
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where a declared member doesn't narrow an inherited definition
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where a declared member doesn't narrow an inherited definition
  */
 function mergeMembers(shape: ResourceShape, parents: readonly ResourceShape[]): Members {
 
@@ -998,7 +998,7 @@ export function narrowest(first: Member, ...rest: readonly Member[]): Member {
  *
  * @returns An immutable shape admitting the resources both `target` and `source` admit
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `target` doesn't narrow `source`
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `target` doesn't narrow `source`
  */
 export function mergeResource(target: ResourceShape, source: ResourceShape): ResourceShape {
 
@@ -1065,7 +1065,7 @@ export function mergeResource(target: ResourceShape, source: ResourceShape): Res
  *
  * @returns An immutable member admitting the values both `target` and `source` admit
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `target` doesn't narrow `source`
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `target` doesn't narrow `source`
  */
 export function mergeProperty(target: Property, source: Property): Property {
 
@@ -1120,7 +1120,7 @@ export function mergeProperty(target: Property, source: Property): Property {
  *
  * @returns An immutable member admitting the values both `target` and `source` admit
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `target` doesn't narrow `source`
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `target` doesn't narrow `source`
  */
 export function mergeMember(target: Member, source: Member): Member {
 

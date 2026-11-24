@@ -26,10 +26,10 @@
  * Shapes are stated with the per-kind modules {@link value! | value} gathers:
  *
  * ```typescript
- * import { boolean } from '@metreeca/blue/boolean';
- * import { integer } from '@metreeca/blue/number';
- * import { id, multiple, optional, required, resource } from '@metreeca/blue/resource';
- * import { date, string } from '@metreeca/blue/string';
+ * import { boolean } from '@grafctory/blue/boolean';
+ * import { integer } from '@grafctory/blue/number';
+ * import { id, multiple, optional, required, resource } from '@grafctory/blue/resource';
+ * import { date, string } from '@grafctory/blue/string';
  *
  * const Product = resource({
  *   id: id(),
@@ -49,7 +49,7 @@
  * Schema accepted by structured output generators, which reject the keywords and formats outside it:
  *
  * ```typescript
- * import { schema } from '@metreeca/blue';
+ * import { schema } from '@grafctory/blue';
  *
  * schema(Product);                    // the payloads Product admits
  * schema(Product, { strict: true });  // the same, for strict structured output generators
@@ -62,9 +62,9 @@
  * the shapes they extend, link to or embed, each once and in a stable order, ready to be encoded as a whole:
  *
  * ```typescript
- * import { model } from '@metreeca/blue';
- * import { id, optional, resource } from '@metreeca/blue/resource';
- * import { reference } from '@metreeca/blue/reference';
+ * import { model } from '@grafctory/blue';
+ * import { id, optional, resource } from '@grafctory/blue/resource';
+ * import { reference } from '@grafctory/blue/reference';
  *
  * const Vendor = resource({
  *   id: id()
@@ -83,7 +83,7 @@
  * The same shape answers three questions; the `model` option settles which is being asked:
  *
  * ```typescript
- * import { validate } from '@metreeca/blue';
+ * import { validate } from '@grafctory/blue';
  *
  * validate(product, { shape: Product })({                    // a resource in its own right
  *   value: product => console.log(product.name),
@@ -109,13 +109,13 @@
  * @see {@link https://www.w3.org/TR/shacl/ SHACL - Shapes Constraint Language}
  */
 
-import { isString, type Lazy, map, memo, opt, type Optional } from "@metreeca/core";
-import { type Some, some } from "@metreeca/core/arrays";
-import { createRelay, type Relay } from "@metreeca/core/relay";
-import { type Trace } from "@metreeca/core/trace";
-import { equals, immutable, seal } from "@metreeca/core/values";
-import type { Template } from "@metreeca/qest/model";
-import type { Dictionary, Reference } from "@metreeca/qest/state";
+import { isString, type Lazy, map, memo, opt, type Optional } from "@grafctory/core";
+import { type Some, some } from "@grafctory/core/arrays";
+import { createRelay, type Relay } from "@grafctory/core/relay";
+import { type Trace } from "@grafctory/core/trace";
+import { equals, immutable, seal } from "@grafctory/core/values";
+import type { Template } from "@grafctory/qest/model";
+import type { Dictionary, Reference } from "@grafctory/qest/state";
 import type { JSONSchema } from "json-schema-typed";
 import { enforce } from "./index.core.js";
 import { getShapeTarget } from "./reference/index.js";
@@ -368,7 +368,7 @@ type Sealed = {
  *
  * @returns The JSON Schema describing the values `shape` admits
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `shape` is malformed, as where it embeds itself with no
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `shape` is malformed, as where it embeds itself with no
  *     link to break the cycle and so admits no finite payload a schema could describe
  * @throws {@link !RangeError RangeError} If `shape` admits a {@link dictionary!dictionary | localised} value range at
  *     any depth, as a JSON Schema has no way to name the language tags keying each localised value it describes
@@ -484,7 +484,7 @@ export function model(shapes: Some<Lazy<ResourceShape>>): readonly ResourceShape
  *
  * @returns A {@link Relay} carrying the resource where it passes and a trace of the violations where it doesn't
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `shape` is malformed
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `shape` is malformed
  */
 export function validate<S extends Lazy<ResourceShape>>(value: unknown, opts: {
 
@@ -541,7 +541,7 @@ export function validate<S extends Lazy<ResourceShape>>(value: unknown, opts: {
  *
  * @returns A {@link Relay} carrying the resource where it passes and a trace of the violations where it doesn't
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `shape` is malformed
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `shape` is malformed
  */
 export function validate<S extends Lazy<ResourceShape>, M extends Template>(value: unknown, opts: {
 
@@ -601,7 +601,7 @@ export function validate<S extends Lazy<ResourceShape>, M extends Template>(valu
  *
  * @returns A {@link Relay} carrying the template where it passes and a trace of the violations where it doesn't
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `shape` is malformed
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `shape` is malformed
  */
 export function validate<T extends Template>(value: unknown, opts: {
 

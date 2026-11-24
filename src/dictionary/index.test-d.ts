@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { assert } from "@metreeca/core";
-import { isTagRange, type Tag } from "@metreeca/core/language";
+import { assert } from "@grafctory/core";
+import { isTagRange, type Tag } from "@grafctory/core/language";
 import { describe, expectTypeOf, test } from "vitest";
 import { dictionary, type DictionaryShape } from "./index.js";
 import type { Coalesced } from "./inference.js";

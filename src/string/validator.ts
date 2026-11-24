@@ -23,10 +23,10 @@
  * @module
  */
 
-import { isString, type Optional } from "@metreeca/core";
-import { isAtomic } from "@metreeca/qest/model";
+import { isString, type Optional } from "@grafctory/core";
+import { isAtomic } from "@grafctory/qest/model";
 import { all, array, domain, length, pass, test, type Trace, type, type Validator, values as contains }
-	from "@metreeca/core/trace";
+	from "@grafctory/core/trace";
 import { type Scope, scoped } from "../value/validator.js";
 import { type StringShape } from "./index.js";
 

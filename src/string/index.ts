@@ -25,7 +25,7 @@
  *
  * > [!IMPORTANT]
  * > Contradictory constraints are rejected as the shape is built, so a shape that exists admits at least one value:
- * > stating `minLength` above `maxLength` throws a {@link @metreeca/core!TraceError | TraceError}.
+ * > stating `minLength` above `maxLength` throws a {@link @grafctory/core!TraceError | TraceError}.
  *
  * | XSD Datatype ¹    | Factory             | Description                        | Format                        |
  * | ----------------- | ------------------- | ---------------------------------- | ----------------------------- |
@@ -89,7 +89,7 @@
  * **Defining string shapes**
  *
  * ```typescript
- * import { string } from '@metreeca/blue/string';
+ * import { string } from '@grafctory/blue/string';
  *
  * const value = string();                                     // unconstrained string
  * const name = string({ minLength: 1, maxLength: 100 });      // length-constrained
@@ -109,7 +109,7 @@
  * ```typescript
  * import {
  *   text, markdown, email, phone, iri, url, tag, date, time, instant, timestamp, duration
- * } from '@metreeca/blue/string';
+ * } from '@grafctory/blue/string';
  *
  * const label = text();         // single-line plain text
  * const body = markdown();      // Markdown formatted text
@@ -128,8 +128,8 @@
  * **Using in resource shapes**
  *
  * ```typescript
- * import { multiple, optional, required, resource } from '@metreeca/blue/resource';
- * import { date, email, string } from '@metreeca/blue/string';
+ * import { multiple, optional, required, resource } from '@grafctory/blue/resource';
+ * import { date, email, string } from '@grafctory/blue/string';
  *
  * const Person = resource({
  *   name: required(string({ minLength: 1 })),
@@ -145,11 +145,11 @@
  *     Datatypes}
  */
 
-import { isString } from "@metreeca/core";
-import { xsd } from "@metreeca/core/datatype";
-import { TagPattern } from "@metreeca/core/language";
-import type { Variant } from "@metreeca/core/resource";
-import type { Reference } from "@metreeca/qest/state";
+import { isString } from "@grafctory/core";
+import { xsd } from "@grafctory/core/datatype";
+import { TagPattern } from "@grafctory/core/language";
+import type { Variant } from "@grafctory/core/resource";
+import type { Reference } from "@grafctory/qest/state";
 import type { Legal } from "../value/inference.js";
 import { assemble } from "./assembler.js";
 
@@ -403,7 +403,7 @@ export type StringValueConstraints<V extends string = string> = {
  *
  * @returns An immutable shape admitting the strings the constraints bound, narrowed to the values they enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  */
 export function string<const C extends StringConstraints = {}>(constraints?: C): StringShape<Legal<C, string>>;
 
@@ -447,7 +447,7 @@ export function string(...args: readonly (string | StringConstraints)[]): String
  *
  * @returns An immutable shape admitting single-line plain text
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  */
 export function text(constraints?: StringLengthConstraints): StringShape {
 
@@ -475,7 +475,7 @@ export function text(constraints?: StringLengthConstraints): StringShape {
  *
  * @returns An immutable shape admitting Markdown text
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://commonmark.org/ CommonMark Spec}
  */
@@ -502,7 +502,7 @@ export function markdown(constraints?: StringLengthConstraints): StringShape {
  *
  * @returns An immutable shape admitting email addresses, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://datatracker.ietf.org/doc/html/rfc5321 RFC 5321 - Simple Mail Transfer Protocol}
  */
@@ -531,7 +531,7 @@ export function email<const C extends StringValueConstraints = {}>(constraints?:
  *
  * @returns An immutable shape admitting E.164 telephone numbers, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.itu.int/rec/T-REC-E.164 ITU-T E.164 - International public telecommunication numbering plan}
  */
@@ -567,7 +567,7 @@ export function phone<const C extends StringValueConstraints = {}>(constraints?:
  *
  * @returns An immutable shape admitting IRIs of the stated variant, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://datatracker.ietf.org/doc/html/rfc3987 RFC 3987 - Internationalized Resource Identifiers}
  * @see {@link https://datatracker.ietf.org/doc/html/rfc3986 RFC 3986 - URI Generic Syntax}
@@ -605,7 +605,7 @@ export function iri<const C extends StringValueConstraints & {
  *
  * @returns An immutable shape admitting hierarchical URLs, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://datatracker.ietf.org/doc/html/rfc3986 RFC 3986 - URI Generic Syntax}
  */
@@ -639,7 +639,7 @@ export function url<const C extends StringValueConstraints = {}>(constraints?: C
  *
  * @returns An immutable shape admitting language tags, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.rfc-editor.org/info/bcp47 BCP 47 - Tags for Identifying Languages}
  */
@@ -671,7 +671,7 @@ export function tag<const C extends StringValueConstraints = {}>(constraints?: C
  *
  * @returns An immutable shape admitting ISO 8601 years, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @remarks
  *
@@ -705,7 +705,7 @@ export function year<const C extends StringValueConstraints = {}>(constraints?: 
  *
  * @returns An immutable shape admitting ISO 8601 dates, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.w3.org/TR/xmlschema-2/#date XSD 1.0 Part 2: Datatypes § 3.2.9 date}
  */
@@ -735,7 +735,7 @@ export function date<const C extends StringValueConstraints = {}>(constraints?: 
  *
  * @returns An immutable shape admitting ISO 8601 times, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.w3.org/TR/xmlschema-2/#time XSD 1.0 Part 2: Datatypes § 3.2.8 time}
  */
@@ -765,7 +765,7 @@ export function time<const C extends StringValueConstraints = {}>(constraints?: 
  * @returns An immutable shape admitting ISO 8601 date and time values, narrowed to the values the constraints
  *     enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.w3.org/TR/xmlschema-2/#dateTime XSD 1.0 Part 2: Datatypes § 3.2.7 dateTime}
  */
@@ -797,7 +797,7 @@ export function instant<const C extends StringValueConstraints = {}>(constraints
  *
  * @returns An immutable shape admitting UTC timestamps, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.w3.org/TR/xmlschema-2/#dateTime XSD 1.0 Part 2: Datatypes § 3.2.7 dateTime}
  */
@@ -827,7 +827,7 @@ export function timestamp<const C extends StringValueConstraints = {}>(constrain
  *
  * @returns An immutable shape admitting ISO 8601 durations, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.w3.org/TR/xmlschema-2/#duration XSD 1.0 Part 2: Datatypes § 3.2.6 duration}
  */

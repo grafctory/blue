@@ -23,7 +23,7 @@
  * @module
  */
 
-import type { Eager, Lazy } from "@metreeca/core";
+import type { Eager, Lazy } from "@grafctory/core";
 import type { Shape } from "../value/index.js";
 import type { UnionShape } from "./index.js";
 

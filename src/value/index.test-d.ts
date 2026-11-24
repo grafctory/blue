@@ -15,10 +15,10 @@
  */
 
 
-import type { Lazy, Optional } from "@metreeca/core";
-import type { Tag } from "@metreeca/core/language";
-import type { Template } from "@metreeca/qest/model";
-import type { Reference, Resource, Value, Values } from "@metreeca/qest/state";
+import type { Lazy, Optional } from "@grafctory/core";
+import type { Tag } from "@grafctory/core/language";
+import type { Template } from "@grafctory/qest/model";
+import type { Reference, Resource, Value, Values } from "@grafctory/qest/state";
 import { assertType, describe, expectTypeOf, it, test } from "vitest";
 import { type BooleanShape } from "../boolean/index.js";
 import { dictionary, type DictionaryShape } from "../dictionary/index.js";

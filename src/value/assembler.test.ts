@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TraceError } from "@metreeca/core/trace";
+import { TraceError } from "@grafctory/core/trace";
 import { describe, expect, it } from "vitest";
 import { boolean } from "../boolean/index.js";
 import { dictionary } from "../dictionary/index.js";

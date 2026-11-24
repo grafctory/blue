@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { xsd } from "@metreeca/core/datatype";
-import { isTag } from "@metreeca/core/language";
+import { xsd } from "@grafctory/core/datatype";
+import { isTag } from "@grafctory/core/language";
 import { describe, expect, it } from "vitest";
 import {
 	date,

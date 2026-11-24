@@ -25,8 +25,8 @@
  * @module
  */
 
-import type { Eager, Lazy } from "@metreeca/core";
-import type { Tag } from "@metreeca/core/language";
+import type { Eager, Lazy } from "@grafctory/core";
+import type { Tag } from "@grafctory/core/language";
 import type { DictionaryConstraints, DictionaryShape } from "./index.js";
 
 /**

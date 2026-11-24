@@ -23,9 +23,9 @@
  * @module
  */
 
-import { assert, type Optional } from "@metreeca/core";
-import { type Trace, type Validator } from "@metreeca/core/trace";
-import { type Reference } from "@metreeca/qest/state";
+import { assert, type Optional } from "@grafctory/core";
+import { type Trace, type Validator } from "@grafctory/core/trace";
+import { type Reference } from "@grafctory/qest/state";
 import { validateBoolean } from "../boolean/validator.js";
 import { validateDictionary } from "../dictionary/validator.js";
 import { validateNumber } from "../number/validator.js";

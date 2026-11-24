@@ -15,9 +15,9 @@
  */
 
 
-import { isString } from "@metreeca/core";
-import { type Issue, TraceError } from "@metreeca/core/trace";
-import type { Probe, Transform } from "@metreeca/qest/model";
+import { isString } from "@grafctory/core";
+import { type Issue, TraceError } from "@grafctory/core/trace";
+import type { Probe, Transform } from "@grafctory/qest/model";
 import { describe, expect, it } from "vitest";
 import { boolean } from "../boolean/index.js";
 import { dictionary } from "../dictionary/index.js";

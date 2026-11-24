@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Optional } from "@metreeca/core";
-import type { Reference, Resource } from "@metreeca/qest/state";
+import type { Optional } from "@grafctory/core";
+import type { Reference, Resource } from "@grafctory/qest/state";
 import { describe, expectTypeOf, test } from "vitest";
 import { type Tagged } from "../dictionary/inference.js";
 import { type DictionaryShape } from "../dictionary/index.js";

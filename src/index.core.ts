@@ -23,8 +23,8 @@
  * @module
  */
 
-import { isIdentifier, isObject, type Optional } from "@metreeca/core";
-import { decodeProbe, isBinding, isBranch, isUnion } from "@metreeca/qest/model";
+import { isIdentifier, isObject, type Optional } from "@grafctory/core";
+import { decodeProbe, isBinding, isBranch, isUnion } from "@grafctory/qest/model";
 import { getShapeTarget } from "./reference/index.js";
 import type { ResourceShape } from "./resource/index.js";
 import { getShapeBranches } from "./union/index.js";
@@ -56,7 +56,7 @@ import { effective, type Range, type Shape } from "./value/index.js";
  *
  * @returns A template structurally equivalent to `value`, rewritten where a policy requires it
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `shape` reaches itself through a cycle no link
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `shape` reaches itself through a cycle no link
  *     breaks, or where a union it reaches declares a shared member name inconsistently across its branches
  */
 export function enforce(value: unknown, shape: ResourceShape, {

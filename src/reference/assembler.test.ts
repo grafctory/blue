@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TraceError } from "@metreeca/core/trace";
+import { TraceError } from "@grafctory/core/trace";
 import { describe, expect, it } from "vitest";
 import { eager } from "../value/index.js";
 import { mergeReference, narrowsReference } from "./assembler.js";

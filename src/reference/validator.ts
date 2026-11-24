@@ -23,7 +23,7 @@
  * @module
  */
 
-import { type Optional } from "@metreeca/core";
+import { type Optional } from "@grafctory/core";
 import {
 	all,
 	array,
@@ -34,9 +34,9 @@ import {
 	type,
 	type Validator,
 	values as contains
-} from "@metreeca/core/trace";
-import { isAtomic } from "@metreeca/qest/model";
-import { isReference } from "@metreeca/qest/state";
+} from "@grafctory/core/trace";
+import { isAtomic } from "@grafctory/qest/model";
+import { isReference } from "@grafctory/qest/state";
 import type { ResourceShape } from "../resource/index.js";
 import { eager } from "../value/index.js";
 import { match, type Scope } from "../value/validator.js";

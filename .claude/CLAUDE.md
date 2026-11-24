@@ -1,6 +1,6 @@
 ---
 title: Project Guidelines
-description: Development guidelines and conventions for the @metreeca/blue package.
+description: Development guidelines and conventions for the @grafctory/blue package.
 ---
 
 > [!CAUTION]
@@ -16,20 +16,20 @@ description: Development guidelines and conventions for the @metreeca/blue packa
 
 ## Dependencies
 
-- [@metreeca/core](https://github.com/metreeca/core) - Core utilities and shared types
-- [@metreeca/qest](https://github.com/metreeca/qest) - Linked data models and query languages
+- [@grafctory/core](https://github.com/grafctory/core) - Core utilities and shared types
+- [@grafctory/qest](https://github.com/grafctory/qest) - Linked data models and query languages
 
 # NPM Scripts
 
 - **`npm run clean`** - Remove dependencies and build artefacts
 - **`npm run prime`** - Install dependencies from the lockfile
-- **`npm run setup`** - Install dependencies and link sibling `@metreeca/*` repositories
+- **`npm run setup`** - Install dependencies and link sibling `@grafctory/*` repositories
 - **`npm run build`** - Compile sources and generate docs
 - **`npm run check`** - Run the test suite
 - **`npm run proof`** - Serve live docs
 
 > [!CAUTION]
-> **`prime` and `setup` are not interchangeable.** Run `prime` when finalising a public release: `@metreeca/*` imports
+> **`prime` and `setup` are not interchangeable.** Run `prime` when finalising a public release: `@grafctory/*` imports
 > resolve to the published releases recorded in the lockfile. Run `setup` for local development against unpublished
 > sibling branches: imports resolve to the working copies in the neighbouring repositories.
 

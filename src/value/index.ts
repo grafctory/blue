@@ -87,10 +87,10 @@
  * @see {@link https://www.w3.org/TR/shacl/ SHACL - Shapes Constraint Language}
  */
 
-import type { Eager, Lazy, Optional } from "@metreeca/core";
-import { createNamespace, type Namespace } from "@metreeca/core/resource";
-import type { Binding, Criteria, Template } from "@metreeca/qest/model";
-import type { Resource, Value } from "@metreeca/qest/state";
+import type { Eager, Lazy, Optional } from "@grafctory/core";
+import { createNamespace, type Namespace } from "@grafctory/core/resource";
+import type { Binding, Criteria, Template } from "@grafctory/qest/model";
+import type { Resource, Value } from "@grafctory/qest/state";
 import type { BooleanShape } from "../boolean/index.js";
 import type { DictionaryShape } from "../dictionary/index.js";
 import type { NumberShape } from "../number/index.js";
@@ -186,10 +186,10 @@ export type Range<
  *
  * Scalar, localised and reference shapes resolve to their plain value. Resource shapes resolve to a record of their
  * declared members merged over the inherited ones. Union shapes resolve to the value of any branch. A reference shape
- * resolves to a {@link @metreeca/qest!Reference | Reference} to its target, never to the target resource itself. A
+ * resolves to a {@link @grafctory/qest!Reference | Reference} to its target, never to the target resource itself. A
  * bare {@link Shape}, standing for any kind of value, resolves to `never`; the bare
  * {@link resource!ResourceShape | ResourceShape}, standing for any resource, resolves to
- * {@link @metreeca/qest!Resource | Resource}, so the state of any resource shape is accepted where only a generic
+ * {@link @grafctory/qest!Resource | Resource}, so the state of any resource shape is accepted where only a generic
  * resource shape is known.
  *
  * In a resource, the identifier is the IRI of the resource and the type is the IRI of its class, undefined for untyped
@@ -224,8 +224,8 @@ export type State<S extends Lazy<Shape>> =
  * satisfy, so it can be validated before it is stored. Resolves to `never` for properties holding values other than
  * resources, which can't be drafted.
  *
- * The bare {@link resource!ResourceShape | ResourceShape} or a generic {@link @metreeca/qest!Template | Template}
- * resolves to any {@link @metreeca/qest!Resource | Resource}, so any draft is accepted where only a generic shape or
+ * The bare {@link resource!ResourceShape | ResourceShape} or a generic {@link @grafctory/qest!Template | Template}
+ * resolves to any {@link @grafctory/qest!Resource | Resource}, so any draft is accepted where only a generic shape or
  * model is known.
  *
  * @typeParam S The resource shape, or the shape of the resource holding the collection, possibly deferred to break
@@ -241,7 +241,7 @@ export type Draft<S extends Lazy<ResourceShape>, T = never> =
 /**
  * Resolves the models for retrieving a resource.
  *
- * Resolves to the {@link @metreeca/qest!Template | templates} a retrieval against the shape may use, so that a template
+ * Resolves to the {@link @grafctory/qest!Template | templates} a retrieval against the shape may use, so that a template
  * naming members the shape doesn't declare, or requesting a member in a form its range doesn't support, fails to
  * compile instead of failing in the store. Any member of the shape, declared or inherited, may be requested as:
  *
@@ -254,7 +254,7 @@ export type Draft<S extends Lazy<ResourceShape>, T = never> =
  * Only forms are checked: filter, ordering and projection expressions are not validated against the shape. Since keys
  * are compared structurally, a template mixing unknown members with known ones is accepted, unless the template is
  * passed as `T`: a bound stated as `T extends Model<S, T>` rejects it. Every model is a
- * {@link @metreeca/qest!Template | Template}, so stores can read it as one regardless of its shape.
+ * {@link @grafctory/qest!Template | Template}, so stores can read it as one regardless of its shape.
  *
  * @typeParam S The resource shape, possibly deferred to break definition cycles
  * @typeParam T The supplied template, typically inferred from the argument, with members the shape doesn't declare
@@ -280,7 +280,7 @@ export type Model<S extends Lazy<ResourceShape>, T = never> = Template & Entries
  * selects, the tags a language range selects, or the type an expression computes, must narrow it themselves.
  *
  * Under the bare {@link resource!ResourceShape | ResourceShape}, every member the template names resolves to any
- * {@link @metreeca/qest!Values | values}. A generic {@link @metreeca/qest!Template | Template} names no member at all
+ * {@link @grafctory/qest!Values | values}. A generic {@link @grafctory/qest!Template | Template} names no member at all
  * and resolves to an empty record, with no member left for the shape to resolve.
  *
  * @typeParam S The shape the retrieval runs against, possibly deferred to break definition cycles
@@ -298,7 +298,7 @@ export type Match<S extends Lazy<ResourceShape>, T extends object> =
  *
  * A slice is a specialised {@link Model | model} of the holding shape that targets a single collection, a property
  * holding any number of resources. It names that property and nothing else, and states under it a
- * {@link Model | template} or a {@link @metreeca/qest!Projection | projection} over the item shape, merged with
+ * {@link Model | template} or a {@link @grafctory/qest!Projection | projection} over the item shape, merged with
  * filtering, ordering and pagination criteria for the collection. This way a collection retrieval is checked against
  * the holding shape alone, just like a resource retrieval.
  *
@@ -310,7 +310,7 @@ export type Match<S extends Lazy<ResourceShape>, T extends object> =
  * they request a member the item shape doesn't declare.
  *
  * The bare {@link resource!ResourceShape | ResourceShape} accepts any model naming a single property, and a generic
- * {@link @metreeca/qest!Template | Template} is accepted as {@link Model} accepts it, so collection retrievals still
+ * {@link @grafctory/qest!Template | Template} is accepted as {@link Model} accepts it, so collection retrievals still
  * compile where only a generic shape or model is known.
  *
  * @typeParam S The shape of the resource holding the collection, possibly deferred to break definition cycles
@@ -332,7 +332,7 @@ export type Slice<S extends Lazy<ResourceShape>, T> =
  *
  * Items are always an array, whatever the shape and model, so they are accepted wherever an iterable of items is
  * expected, even in code generic over both. The bare {@link resource!ResourceShape | ResourceShape} or a generic
- * {@link @metreeca/qest!Template | Template} resolves to an array of any {@link @metreeca/qest!Value | values}, so
+ * {@link @grafctory/qest!Template | Template} resolves to an array of any {@link @grafctory/qest!Value | values}, so
  * any collection result is accepted where only a generic shape or model is known.
  *
  * @typeParam S The shape of the resource holding the collection, possibly deferred to break definition cycles
@@ -350,9 +350,9 @@ export type Items<S extends Lazy<ResourceShape>, T extends object> =
  * A frame is one of the {@link Items | items} returned by a {@link Slice | slice} retrieval. For a template
  * under the property, the item is restricted to the members the template names. For a projection, it is a computed
  * row, keyed by the name before each binding's `=`. For an empty template, it is the item as stored, such as a
- * {@link @metreeca/qest!Reference | reference}. Filtering, ordering and pagination criteria don't affect the item
+ * {@link @grafctory/qest!Reference | reference}. Filtering, ordering and pagination criteria don't affect the item
  * type. The bare {@link resource!ResourceShape | ResourceShape} or a generic
- * {@link @metreeca/qest!Template | Template} resolves to any {@link @metreeca/qest!Value | value}.
+ * {@link @grafctory/qest!Template | Template} resolves to any {@link @grafctory/qest!Value | value}.
  *
  * Code generic over the shape and the slice uses this type to name a single item, for instance to type the items
  * flattened out of several retrievals.

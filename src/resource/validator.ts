@@ -34,10 +34,10 @@ import {
 	isString,
 	opt as fold,
 	type Optional
-} from "@metreeca/core";
-import { isTagRange } from "@metreeca/core/language";
-import { all, array, fail, object, type Trace } from "@metreeca/core/trace";
-import { isReference, isVacuous, type Reference, type Resource } from "@metreeca/qest/state";
+} from "@grafctory/core";
+import { isTagRange } from "@grafctory/core/language";
+import { all, array, fail, object, type Trace } from "@grafctory/core/trace";
+import { isReference, isVacuous, type Reference, type Resource } from "@grafctory/qest/state";
 import {
 	decodeProbe,
 	isAggregate,
@@ -48,7 +48,7 @@ import {
 	isTemplate,
 	type Probe,
 	type Template
-} from "@metreeca/qest/model";
+} from "@grafctory/qest/model";
 import type { DictionaryShape } from "../dictionary/index.js";
 import { eager, effective, type Range, type Shape } from "../value/index.js";
 import { match, type Scope, validateShape } from "../value/validator.js";
@@ -299,7 +299,7 @@ export function validateResource(values: readonly unknown[], shape: ResourceShap
  *
  * @returns A trace of the violations found, or `undefined` where every template asks for what the shape can give
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `shape` reaches itself through a cycle no link
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `shape` reaches itself through a cycle no link
  *     breaks, or where a union it reaches declares a shared member name inconsistently across its branches
  */
 export function validateTemplate(values: readonly unknown[], shape: ResourceShape, {

@@ -36,12 +36,12 @@ import {
 	type Lazy,
 	opt as fold,
 	type Optional
-} from "@metreeca/core";
-import { unique } from "@metreeca/core/arrays";
-import { xsd } from "@metreeca/core/datatype";
-import { all, type Issue, type Trace, TraceError } from "@metreeca/core/trace";
-import { equals, immutable } from "@metreeca/core/values";
-import { isProbe, type Probe, type Transform, Transforms } from "@metreeca/qest/model";
+} from "@grafctory/core";
+import { unique } from "@grafctory/core/arrays";
+import { xsd } from "@grafctory/core/datatype";
+import { all, type Issue, type Trace, TraceError } from "@grafctory/core/trace";
+import { equals, immutable } from "@grafctory/core/values";
+import { isProbe, type Probe, type Transform, Transforms } from "@grafctory/qest/model";
 
 import { decimal, integer } from "../number/index.js";
 import { getShapeTarget } from "../reference/index.js";
@@ -129,7 +129,7 @@ const shapes = new WeakMap<() => Shape | Range, null | Shape | Range>();
  *
  * @returns The shape or range `shape` states, merged where it describes a resource
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where a deferred definition reaches itself, leaving the
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where a deferred definition reaches itself, leaving the
  *     shape it states undefined, where it embeds itself with no link to break the cycle, or where it states a target
  *     that doesn't narrow the inherited target overridden by the link it is reached through
  */
@@ -272,13 +272,13 @@ export function eager<S extends Lazy<Shape | Range>>(shape: S): Eager<S> {
  *     `"multiple aggregate transforms"` where the pipe combines values more than once, or
  *     `"incompatible transform input"` where no alternative survives the transforms
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where a deferred definition reaches itself, leaving the
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where a deferred definition reaches itself, leaving the
  *     shape it states undefined, where it embeds itself with no link to break the cycle, where it states a target
  *     that doesn't narrow the inherited target overridden by the link it is reached through, or where a union
  *     the path crosses declares a shared member name inconsistently across its branches
  * @throws {@link !TypeError TypeError} Where `probe` is not a well-formed probe
  *
- * @see {@link https://metreeca.github.io/qest/documents/model.Model_Design.html Model Design}
+ * @see {@link https://grafctory.github.io/qest/documents/model.Model_Design.html Model Design}
  */
 export function effective(shape: Lazy<Shape | Range>, probe: Probe): Range | Issue {
 
@@ -542,7 +542,7 @@ export function effective(shape: Lazy<Shape | Range>, probe: Probe): Range | Iss
  *
  * @returns The property the slice names, whether declared by the shape or inherited
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} If the shape carries no property by the name the slice states
+ * @throws {@link @grafctory/core!TraceError | TraceError} If the shape carries no property by the name the slice states
  */
 export function collection<S extends Lazy<ResourceShape>, T extends Slice<S, T>>(shape: S, model: T): Property {
 
@@ -571,7 +571,7 @@ export function collection<S extends Lazy<ResourceShape>, T extends Slice<S, T>>
  * @returns The shape of the resources the collection embeds, or of the ones its references point to, with inherited
  *     members merged in as by {@link eager}
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} If the shape carries no property by the name the slice
+ * @throws {@link @grafctory/core!TraceError | TraceError} If the shape carries no property by the name the slice
  *     states, or if the property collects anything other than resources
  */
 export function blueprint<S extends Lazy<ResourceShape>, T extends Slice<S, T>>(shape: S, model: T): ResourceShape {

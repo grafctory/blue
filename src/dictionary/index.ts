@@ -25,7 +25,7 @@
  *
  * > [!IMPORTANT]
  * > Contradictory constraints are rejected as the shape is built, so a shape that exists admits at least one value:
- * > stating `minLength` above `maxLength` throws a {@link @metreeca/core!TraceError | TraceError}.
+ * > stating `minLength` above `maxLength` throws a {@link @grafctory/core!TraceError | TraceError}.
  *
  * How many strings a tag carries is fixed by {@link DictionaryConstraints.uniqueLang | uniqueLang}: a unique-tagged
  * shape gives every tag a single string, and any other gives every tag an array. A member ranging over a dictionary
@@ -49,7 +49,7 @@
  * all (identifiers, codes, formulae):
  *
  * ```typescript
- * import { dictionary } from '@metreeca/blue/dictionary';
+ * import { dictionary } from '@grafctory/blue/dictionary';
  *
  * const label = dictionary({ uniqueLang: true });           // a single string per tag
  * const keywords = dictionary();                            // an array of strings per tag
@@ -60,8 +60,8 @@
  * **Using in resource shapes**
  *
  * ```typescript
- * import { multiple, optional, required, resource } from '@metreeca/blue/resource';
- * import { dictionary } from '@metreeca/blue/dictionary';
+ * import { multiple, optional, required, resource } from '@grafctory/blue/resource';
+ * import { dictionary } from '@grafctory/blue/dictionary';
  *
  * const Article = resource({
  *   title: required(dictionary({ uniqueLang: true, minLength: 1 })),
@@ -79,8 +79,8 @@
  * @see {@link https://www.w3.org/TR/rdf11-concepts/#dfn-language-tagged-string RDF 1.1 § 3.3 Literals}
  */
 
-import type { TagRange } from "@metreeca/core/language";
-import { TraceError } from "@metreeca/core/trace";
+import type { TagRange } from "@grafctory/core/language";
+import { TraceError } from "@grafctory/core/trace";
 import { assemble } from "./assembler.js";
 
 
@@ -222,7 +222,7 @@ export type DictionaryConstraints = {
  * @returns An immutable shape admitting the language maps the constraints bound, carrying a single string per tag where
  *     they state {@link DictionaryConstraints.uniqueLang | uniqueLang}
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @example
  *

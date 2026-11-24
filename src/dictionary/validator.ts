@@ -24,10 +24,10 @@
  * @module
  */
 
-import { isArray, isObject, isString, opt as fold, type Optional } from "@metreeca/core";
-import { isTag, isTagRange, matchTag, type Tag } from "@metreeca/core/language";
-import { all, array, fail, length, object, pass, type Trace, type Validator } from "@metreeca/core/trace";
-import { isAtomic } from "@metreeca/qest/model";
+import { isArray, isObject, isString, opt as fold, type Optional } from "@grafctory/core";
+import { isTag, isTagRange, matchTag, type Tag } from "@grafctory/core/language";
+import { all, array, fail, length, object, pass, type Trace, type Validator } from "@grafctory/core/trace";
+import { isAtomic } from "@grafctory/qest/model";
 import type { Scope } from "../value/validator.js";
 import { type DictionaryShape } from "./index.js";
 

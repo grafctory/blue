@@ -25,10 +25,10 @@
  * @module
  */
 
-import { type Optional } from "@metreeca/core";
-import { union } from "@metreeca/core/arrays";
-import { all, test, type Trace, TraceError, type Validator } from "@metreeca/core/trace";
-import type { Reference } from "@metreeca/qest/state";
+import { type Optional } from "@grafctory/core";
+import { union } from "@grafctory/core/arrays";
+import { all, test, type Trace, TraceError, type Validator } from "@grafctory/core/trace";
+import type { Reference } from "@grafctory/qest/state";
 import { mergeBoolean, narrowsBoolean } from "../boolean/assembler.js";
 import { mergeDictionary, narrowsDictionary } from "../dictionary/assembler.js";
 import { mergeNumber, narrowsNumber } from "../number/assembler.js";
@@ -132,7 +132,7 @@ export function narrowsShape(target: Shape, source: Shape): Optional<Trace> {
  *
  * @returns An immutable shape admitting the values both `target` and `source` admit
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `target` doesn't narrow `source`
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `target` doesn't narrow `source`
  */
 export function mergeShape(target: Shape, source: Shape): Shape {
 
@@ -167,7 +167,7 @@ export function mergeShape(target: Shape, source: Shape): Shape {
  * @param message The failure the trace details
  * @param trace The obstacles found, or `undefined` where the test passed
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `trace` is defined
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `trace` is defined
  */
 export function reject(message: string, trace: Optional<Trace>): void {
 

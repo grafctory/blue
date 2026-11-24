@@ -1,11 +1,11 @@
-# @metreeca/blue
+# @grafctory/blue
 
-[![npm](https://img.shields.io/npm/v/@metreeca/blue)](https://www.npmjs.com/package/@metreeca/blue)
+[![npm](https://img.shields.io/npm/v/@grafctory/blue)](https://www.npmjs.com/package/@grafctory/blue)
 
 Declarative blueprints for model-driven linked data processing.
 
-**@metreeca/blue** provides a shape-based schema framework for the linked data model defined
-by [@metreeca/qest](https://metreeca.github.io/qest/).
+**@grafctory/blue** provides a shape-based schema framework for the linked data model defined
+by [@grafctory/qest](https://grafctory.github.io/qest/).
 
 Shape-based schemas go beyond structural validation, capturing the complete semantics of a resource (structure,
 constraints, metadata, and relationships), enabling them to act as a single source of truth for automated validation,
@@ -15,7 +15,7 @@ persistence, API publishing, UI generation, and more:
 - **Guaranteed Consistency**: schema changes propagate to all dependent processes automatically
 - **Less Code to Maintain**: declarative definitions replace scattered imperative logic
 
-**@metreeca/blue** is designed for a broad range of model-driven tasks and ships with a robust and ready-to-use
+**@grafctory/blue** is designed for a broad range of model-driven tasks and ships with a robust and ready-to-use
 validation engine:
 
 - **No Type Duplication**: types and validation rules derived from a single schema
@@ -25,14 +25,14 @@ validation engine:
 
 > [!NOTE]
 >
-> **@metreeca/blue** is part of the
-> [@metreeca/qest integrated ecosystem](https://github.com/metreeca/qest#ecosystem)
+> **@grafctory/blue** is part of the
+> [@grafctory/qest integrated ecosystem](https://github.com/grafctory/qest#ecosystem)
 > for rapid development of linked data applications.
 
 # Installation
 
 ```shell
-npm install @metreeca/blue
+npm install @grafctory/blue
 ```
 
 > [!WARNING]
@@ -48,33 +48,33 @@ npm install @metreeca/blue
 >
 > | Module                       | Description                           |
 > |------------------------------|---------------------------------------|
-> | [@metreeca/blue]             | Linked data validation                |
-> | [@metreeca/blue/value]       | Value shape types and operations      |
-> | [@metreeca/blue/boolean]     | Boolean shape types and operations    |
-> | [@metreeca/blue/number]      | Number shape types and operations     |
-> | [@metreeca/blue/string]      | String shape types and operations     |
-> | [@metreeca/blue/dictionary]  | Dictionary shape types and operations |
-> | [@metreeca/blue/reference]   | Reference shape types and operations  |
-> | [@metreeca/blue/resource]    | Resource shape types and operations   |
-> | [@metreeca/blue/union]       | Union shape types and operations      |
+> | [@grafctory/blue]             | Linked data validation                |
+> | [@grafctory/blue/value]       | Value shape types and operations      |
+> | [@grafctory/blue/boolean]     | Boolean shape types and operations    |
+> | [@grafctory/blue/number]      | Number shape types and operations     |
+> | [@grafctory/blue/string]      | String shape types and operations     |
+> | [@grafctory/blue/dictionary]  | Dictionary shape types and operations |
+> | [@grafctory/blue/reference]   | Reference shape types and operations  |
+> | [@grafctory/blue/resource]    | Resource shape types and operations   |
+> | [@grafctory/blue/union]       | Union shape types and operations      |
 
-[@metreeca/blue]: https://metreeca.github.io/blue/modules/index.html
+[@grafctory/blue]: https://grafctory.github.io/blue/modules/index.html
 
-[@metreeca/blue/value]: https://metreeca.github.io/blue/modules/value.html
+[@grafctory/blue/value]: https://grafctory.github.io/blue/modules/value.html
 
-[@metreeca/blue/boolean]: https://metreeca.github.io/blue/modules/boolean.html
+[@grafctory/blue/boolean]: https://grafctory.github.io/blue/modules/boolean.html
 
-[@metreeca/blue/number]: https://metreeca.github.io/blue/modules/number.html
+[@grafctory/blue/number]: https://grafctory.github.io/blue/modules/number.html
 
-[@metreeca/blue/string]: https://metreeca.github.io/blue/modules/string.html
+[@grafctory/blue/string]: https://grafctory.github.io/blue/modules/string.html
 
-[@metreeca/blue/dictionary]: https://metreeca.github.io/blue/modules/dictionary.html
+[@grafctory/blue/dictionary]: https://grafctory.github.io/blue/modules/dictionary.html
 
-[@metreeca/blue/reference]: https://metreeca.github.io/blue/modules/reference.html
+[@grafctory/blue/reference]: https://grafctory.github.io/blue/modules/reference.html
 
-[@metreeca/blue/resource]: https://metreeca.github.io/blue/modules/resource.html
+[@grafctory/blue/resource]: https://grafctory.github.io/blue/modules/resource.html
 
-[@metreeca/blue/union]: https://metreeca.github.io/blue/modules/union.html
+[@grafctory/blue/union]: https://grafctory.github.io/blue/modules/union.html
 
 
 ## Defining Schemas
@@ -82,13 +82,13 @@ npm install @metreeca/blue
 Schemas describe the expected structure of a resource using shape factories:
 
 ```ts
-import { union } from "@metreeca/blue/union";
-import { boolean } from "@metreeca/blue/boolean";
-import { number } from "@metreeca/blue/number";
-import { string, url } from "@metreeca/blue/string";
-import { dictionary } from "@metreeca/blue/dictionary";
-import { reference } from "@metreeca/blue/reference";
-import { id, multiple, optional, required, resource, type } from "@metreeca/blue/resource";
+import { union } from "@grafctory/blue/union";
+import { boolean } from "@grafctory/blue/boolean";
+import { number } from "@grafctory/blue/number";
+import { string, url } from "@grafctory/blue/string";
+import { dictionary } from "@grafctory/blue/dictionary";
+import { reference } from "@grafctory/blue/reference";
+import { id, multiple, optional, required, resource, type } from "@grafctory/blue/resource";
 
 function Thing() {
 	return resource({
@@ -279,7 +279,7 @@ position the branch was stated at (see [Validating Templates](#validating-templa
 Schemas double as TypeScript type definitions. `State` yields the value a resource carries as it is held:
 
 ```ts
-import { type State } from "@metreeca/blue/value";
+import { type State } from "@grafctory/blue/value";
 
 type ProductType = State<typeof Product>;
 
@@ -310,7 +310,7 @@ already identifies the resource or leaves the store to assign it; stated with a 
 than everything the schema declares:
 
 ```ts
-import { type Match } from "@metreeca/blue/value";
+import { type Match } from "@grafctory/blue/value";
 
 type ProductSummary = Match<typeof Product, { id: {}, price: {} }>;
 
@@ -338,10 +338,10 @@ up the collection property by name.
 ## Validating Resources
 
 The overloaded `validate` function checks a value against a schema and returns a
-[Relay](https://metreeca.github.io/core/interfaces/relay.Relay.html) that dispatches to either a `value` or `trace` handler:
+[Relay](https://grafctory.github.io/core/interfaces/relay.Relay.html) that dispatches to either a `value` or `trace` handler:
 
 ```ts
-import { validate } from "@metreeca/blue";
+import { validate } from "@grafctory/blue";
 
 validate(data, { shape: Product })({
 	value: product => {
@@ -369,7 +369,7 @@ admissible surface and the projection arrives per request), pass `model` as a se
 members the template asked for are checked, and the result is narrowed to them:
 
 ```ts
-import { validate } from "@metreeca/blue";
+import { validate } from "@grafctory/blue";
 
 const model = { id: {}, name: {} }; // projection requested by the caller
 
@@ -394,10 +394,10 @@ the part of it a template asked for, even where the template asks for every memb
 ## Validating Templates
 
 The same `validate` function validates retrieval
-[templates](https://metreeca.github.io/qest/types/model.Template.html) when the `model` option is set to `true`:
+[templates](https://grafctory.github.io/qest/types/model.Template.html) when the `model` option is set to `true`:
 
 ```ts
-import { validate } from "@metreeca/blue";
+import { validate } from "@grafctory/blue";
 
 validate(data, { model: true, shape: Product });
 validate(data, { model: true, shape: Product, plain: true });
@@ -472,8 +472,8 @@ Three options bound the query language a template may draw on:
 describing and validating RDF graphs. It defines *shapes* (sets of constraints that nodes in a graph must satisfy)
 covering structure, cardinality, value ranges, and logical combinations.
 
-**@metreeca/blue** implements a controlled SHACL subset tailored to the
-[JSON-LD](https://www.w3.org/TR/json-ld11/) profile defined by [@metreeca/qest](https://metreeca.github.io/qest/),
+**@grafctory/blue** implements a controlled SHACL subset tailored to the
+[JSON-LD](https://www.w3.org/TR/json-ld11/) profile defined by [@grafctory/qest](https://grafctory.github.io/qest/),
 enabling TypeScript developers to use shape-based validation without mastering SHACL technicalities.
 
 This controlled subset is specified by:
@@ -497,14 +497,14 @@ This controlled subset is specified by:
 
 [Property pair constraints](https://www.w3.org/TR/shacl/#core-components-property-pairs) and
 [property paths](https://www.w3.org/TR/shacl/#property-paths) are not supported; cross-property logic can be implemented
-via custom [validators](https://metreeca.github.io/blue/modules/resource.html).
+via custom [validators](https://grafctory.github.io/blue/modules/resource.html).
 
 # Support
 
-- Open an [issue](https://github.com/metreeca/blue/issues) to report a problem or to suggest a new feature
-- Start a [discussion](https://github.com/metreeca/blue/discussions) to ask a how-to question or to share an idea
+- Open an [issue](https://github.com/grafctory/blue/issues) to report a problem or to suggest a new feature
+- Start a [discussion](https://github.com/grafctory/blue/discussions) to ask a how-to question or to share an idea
 
 # License
 
 This project is licensed under the Apache 2.0 License –
-see [LICENSE](https://github.com/metreeca/blue?tab=Apache-2.0-1-ov-file) file for details.
+see [LICENSE](https://github.com/grafctory/blue?tab=Apache-2.0-1-ov-file) file for details.

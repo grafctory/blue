@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import type { Reference } from "@metreeca/qest/state";
+import type { Reference } from "@grafctory/qest/state";
 import { describe, expectTypeOf, test } from "vitest";
 import { type State } from "../value/index.js";
 import { type NumberShape } from "../number/index.js";

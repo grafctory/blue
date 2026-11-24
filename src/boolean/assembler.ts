@@ -25,9 +25,9 @@
  * @module
  */
 
-import { type Optional } from "@metreeca/core";
-import { immutable } from "@metreeca/core/values";
-import { test, type Trace } from "@metreeca/core/trace";
+import { type Optional } from "@grafctory/core";
+import { immutable } from "@grafctory/core/values";
+import { test, type Trace } from "@grafctory/core/trace";
 import { reject } from "../value/assembler.js";
 import type { BooleanConstraints, BooleanShape } from "./index.js";
 
@@ -94,7 +94,7 @@ export function narrowsBoolean(target: BooleanShape, source: BooleanShape): Opti
  *
  * @returns An immutable shape admitting the values both `target` and `source` admit
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `target` doesn't narrow `source`
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `target` doesn't narrow `source`
  */
 export function mergeBoolean(target: BooleanShape, source: BooleanShape): BooleanShape {
 

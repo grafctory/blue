@@ -35,10 +35,10 @@
  * Give each member a range and a cardinality:
  *
  * ```typescript
- * import { boolean } from '@metreeca/blue/boolean';
- * import { integer } from '@metreeca/blue/number';
- * import { id, nonempty, optional, required, resource } from '@metreeca/blue/resource';
- * import { string } from '@metreeca/blue/string';
+ * import { boolean } from '@grafctory/blue/boolean';
+ * import { integer } from '@grafctory/blue/number';
+ * import { id, nonempty, optional, required, resource } from '@grafctory/blue/resource';
+ * import { string } from '@grafctory/blue/string';
  *
  * const Product = resource({
  *   id: id(),
@@ -68,7 +68,7 @@
  * predicate it maps to, the labels it carries, or whether it is serialised by default:
  *
  * ```typescript
- * import { createNamespace } from '@metreeca/core/resource';
+ * import { createNamespace } from '@grafctory/core/resource';
  *
  * const schema = createNamespace("http://schema.org/");
  *
@@ -84,7 +84,7 @@
  * **embedded** resource, carried inline with no identity of its own.
  *
  * ```typescript
- * import { reference } from '@metreeca/blue/reference';
+ * import { reference } from '@grafctory/blue/reference';
  *
  * const Rating = resource({
  *   average: required(number({ minInclusive: 0, maxInclusive: 5 })),
@@ -172,10 +172,10 @@
  * @see {@link https://www.w3.org/TR/shacl/#ClosedConstraintComponent SHACL § 4.8.1 sh:closed}
  */
 
-import type { Identifier, Lazy, Optional } from "@metreeca/core";
-import type { Namespace } from "@metreeca/core/resource";
-import { type Validator } from "@metreeca/core/trace";
-import type { Dictionary, Reference, Resource } from "@metreeca/qest/state";
+import type { Identifier, Lazy, Optional } from "@grafctory/core";
+import type { Namespace } from "@grafctory/core/resource";
+import { type Validator } from "@grafctory/core/trace";
+import type { Dictionary, Reference, Resource } from "@grafctory/qest/state";
 import type { Range, Shape } from "../value/index.js";
 import { assemble, declare } from "./assembler.js";
 import type { Declared, Unbounded } from "./inference.js";
@@ -346,7 +346,7 @@ export type ResourceConstraints = {
 	 *
 	 * **Inheritance** — inherited; conflicting parents without a child override are reported as an error.
 	 *
-	 * @defaultValue the {@link @metreeca/core!base | base} namespace (`base:/#`)
+	 * @defaultValue the {@link @grafctory/core!base | base} namespace (`base:/#`)
 	 */
 	readonly space?: Namespace;
 
@@ -427,7 +427,7 @@ export type ResourceConstraints = {
 	 * Custom checks a resource must pass beyond the declarative constraints.
 	 *
 	 * Carries the constraints a shape cannot state declaratively: each is handed the whole resource and reports what
-	 * it finds as a {@link @metreeca/core!Trace | Trace}, or `undefined` where the resource passes. Every check runs,
+	 * it finds as a {@link @grafctory/core!Trace | Trace}, or `undefined` where the resource passes. Every check runs,
 	 * so a resource is told everything that is wrong with it at once rather than one thing at a time, and each trace
 	 * is keyed by the name of the check reporting it.
 	 *
@@ -817,7 +817,7 @@ export type PropertyBounds = PropertyConstraints & {
  *
  * @returns An immutable shape admitting the resources the inherited members bound
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the extended shapes disagree on an inherited constraint,
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the extended shapes disagree on an inherited constraint,
  *     or the merged shape states two identifiers, two types, or two members mapping to the same predicate
  */
 export function resource<I extends Parents>(
@@ -838,7 +838,7 @@ export function resource<I extends Parents>(
  * @returns An immutable shape admitting the resources the inherited members and the constraints bound
  *
  * @throws {@link !TypeError TypeError} Where the identifier {@link ResourceConstraints.pattern | pattern} is malformed
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the extended shapes disagree on an inherited constraint,
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the extended shapes disagree on an inherited constraint,
  *     or the merged shape states two identifiers, two types, or two members mapping to the same predicate
  */
 export function resource<I extends Parents>(
@@ -862,7 +862,7 @@ export function resource<I extends Parents>(
  * @returns An immutable shape admitting the resources the members and constraints bound
  *
  * @throws {@link !TypeError TypeError} Where the identifier {@link ResourceConstraints.pattern | pattern} is malformed
- * @throws {@link @metreeca/core!TraceError | TraceError} Where a member fails to narrow the one it overrides, the
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where a member fails to narrow the one it overrides, the
  *     extended shapes disagree on an inherited constraint, the merged shape states two identifiers, two types, or
  *     two members mapping to the same predicate, or a member admitting literals states a reverse mapping
  */
@@ -884,7 +884,7 @@ export function resource<I extends Parents, M extends Members>(
  *
  * @returns An immutable shape admitting the resources the members bound
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where a member fails to narrow the one it overrides, the
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where a member fails to narrow the one it overrides, the
  *     extended shapes disagree on an inherited constraint, the merged shape states two identifiers, two types, or
  *     two members mapping to the same predicate, or a member admitting literals states a reverse mapping
  */

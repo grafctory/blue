@@ -24,9 +24,9 @@
  * @module
  */
 
-import { isFunction, type Lazy, type Optional } from "@metreeca/core";
-import { equals, immutable } from "@metreeca/core/values";
-import { type Trace } from "@metreeca/core/trace";
+import { isFunction, type Lazy, type Optional } from "@grafctory/core";
+import { equals, immutable } from "@grafctory/core/values";
+import { type Trace } from "@grafctory/core/trace";
 import type { ResourceShape } from "../resource/index.js";
 import { reject } from "../value/assembler.js";
 import { eager } from "../value/index.js";
@@ -97,7 +97,7 @@ export function narrowsReference(target: ReferenceShape, source: ReferenceShape)
  *
  * @returns An immutable shape pointing at the narrower of the two targets, deferred where `target` defers it
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `target` states a shape that doesn't narrow `source`;
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `target` states a shape that doesn't narrow `source`;
  *     where it defers one, the same report is raised as the link is crossed
  */
 export function mergeReference(target: ReferenceShape, source: ReferenceShape): ReferenceShape {

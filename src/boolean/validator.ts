@@ -24,9 +24,9 @@
  * @module
  */
 
-import { isBoolean, type Optional } from "@metreeca/core";
-import { isAtomic } from "@metreeca/qest/model";
-import { array, pass, type Trace, type, type Validator } from "@metreeca/core/trace";
+import { isBoolean, type Optional } from "@grafctory/core";
+import { isAtomic } from "@grafctory/qest/model";
+import { array, pass, type Trace, type, type Validator } from "@grafctory/core/trace";
 import { type Scope, scoped } from "../value/validator.js";
 import type { BooleanShape } from "./index.js";
 

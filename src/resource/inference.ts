@@ -24,8 +24,8 @@
  * @module
  */
 
-import type { Eager, Lazy, Optional } from "@metreeca/core";
-import type { Reference } from "@metreeca/qest/state";
+import type { Eager, Lazy, Optional } from "@grafctory/core";
+import type { Reference } from "@grafctory/qest/state";
 import type { DictionaryShape } from "../dictionary/index.js";
 import type { ReferenceShape } from "../reference/index.js";
 import type { Variant } from "../union/inference.js";

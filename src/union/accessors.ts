@@ -24,9 +24,9 @@
  * @module
  */
 
-import { isObject, type Lazy, opt, type Optional } from "@metreeca/core";
-import { type Trace } from "@metreeca/core/trace";
-import { isAtomic } from "@metreeca/qest/model";
+import { isObject, type Lazy, opt, type Optional } from "@grafctory/core";
+import { type Trace } from "@grafctory/core/trace";
+import { isAtomic } from "@grafctory/qest/model";
 import { getShapeTarget } from "../reference/index.js";
 import type { Member, ResourceShape } from "../resource/index.js";
 import { validateTemplate } from "../resource/validator.js";
@@ -66,10 +66,10 @@ const unions = new WeakMap<UnionShape, readonly Shape[]>();
  * @returns The branches `shape` admits values from, in the order they were stated, each resolved and merged where it
  *     describes a resource
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where a deferred definition reaches itself with no link to
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where a deferred definition reaches itself with no link to
  *     break the cycle, or where the branches declare a shared member name inconsistently
  *
- * @see {@link https://metreeca.github.io/qest/documents/model.Model_Design.html Model Design § 3.2 Union Constraints}
+ * @see {@link https://grafctory.github.io/qest/documents/model.Model_Design.html Model Design § 3.2 Union Constraints}
  */
 export function getShapeBranches(shape: Lazy<Shape>): readonly Shape[] {
 
@@ -254,7 +254,7 @@ function answers(target: ResourceShape, name: string, asked: unknown): boolean {
 /**
  * Resolves the branches of a union and holds them to coherence.
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the branches declare a shared member name
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the branches declare a shared member name
  *     inconsistently
  */
 function settle(union: UnionShape): readonly Shape[] {

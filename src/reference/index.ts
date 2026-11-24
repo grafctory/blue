@@ -28,8 +28,8 @@
  * Wrap a target resource shape with {@link reference} and give it a cardinality:
  *
  * ```typescript
- * import { id, multiple, required, resource } from '@metreeca/blue/resource';
- * import { reference } from '@metreeca/blue/reference';
+ * import { id, multiple, required, resource } from '@grafctory/blue/resource';
+ * import { reference } from '@grafctory/blue/reference';
  *
  * const Vendor = resource({
  *   id: id()
@@ -61,7 +61,7 @@
  * @see {@link https://www.w3.org/TR/shacl/#node-shapes SHACL § 2.2 Node Shapes}
  */
 
-import type { Lazy } from "@metreeca/core";
+import type { Lazy } from "@grafctory/core";
 import type { ResourceShape } from "../resource/index.js";
 import { assemble } from "./assembler.js";
 

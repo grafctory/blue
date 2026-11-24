@@ -24,9 +24,9 @@
  * @module
  */
 
-import { isRegExp, type Optional } from "@metreeca/core";
-import { immutable } from "@metreeca/core/values";
-import { all, test, type Trace } from "@metreeca/core/trace";
+import { isRegExp, type Optional } from "@grafctory/core";
+import { immutable } from "@grafctory/core/values";
+import { all, test, type Trace } from "@grafctory/core/trace";
 import { checkDomain, intersect, narrowsDatatype, narrowsDomain, reject, unite } from "../value/assembler.js";
 import { type StringConstraints, type StringShape } from "./index.js";
 
@@ -44,7 +44,7 @@ import { type StringConstraints, type StringShape } from "./index.js";
  *
  * @returns An immutable shape admitting the strings the constraints bound
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  */
 export function assemble<V extends string>(constraints: StringConstraints): StringShape<V> {
 
@@ -148,7 +148,7 @@ export function narrowsString(target: StringShape, source: StringShape): Optiona
  *
  * @returns An immutable shape admitting the values both `target` and `source` admit
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `target` doesn't narrow `source`
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `target` doesn't narrow `source`
  */
 export function mergeString(target: StringShape, source: StringShape): StringShape {
 

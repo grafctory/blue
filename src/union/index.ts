@@ -27,10 +27,10 @@
  * State the alternatives positionally; cardinality belongs to the enclosing member rather than to a branch:
  *
  * ```typescript
- * import { optional, resource } from '@metreeca/blue/resource';
- * import { reference } from '@metreeca/blue/reference';
- * import { string } from '@metreeca/blue/string';
- * import { union } from '@metreeca/blue/union';
+ * import { optional, resource } from '@grafctory/blue/resource';
+ * import { reference } from '@grafctory/blue/reference';
+ * import { string } from '@grafctory/blue/string';
+ * import { union } from '@grafctory/blue/union';
  *
  * const Contact = resource({
  *   address: optional(union(
@@ -64,7 +64,7 @@
  * @see {@link https://www.w3.org/TR/shacl/#OrConstraintComponent SHACL § 4.6.2 sh:or}
  */
 
-import type { Lazy } from "@metreeca/core";
+import type { Lazy } from "@grafctory/core";
 import type { Shape } from "../value/index.js";
 import { assemble } from "./assembler.js";
 

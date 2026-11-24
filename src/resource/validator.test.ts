@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { isArray, isObject, type Optional } from "@metreeca/core";
-import { type Trace } from "@metreeca/core/trace";
-import type { Resource } from "@metreeca/qest/state";
+import { isArray, isObject, type Optional } from "@grafctory/core";
+import { type Trace } from "@grafctory/core/trace";
+import type { Resource } from "@grafctory/qest/state";
 import { describe, expect, it } from "vitest";
 import { boolean } from "../boolean/index.js";
 import { dictionary } from "../dictionary/index.js";

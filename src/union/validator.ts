@@ -24,11 +24,11 @@
  * @module
  */
 
-import { isArray, isBoolean, isNumber, isObject, isString, type Optional } from "@metreeca/core";
-import { isTag } from "@metreeca/core/language";
-import { array, object, type Trace } from "@metreeca/core/trace";
-import { isAtomic } from "@metreeca/qest/model";
-import { isReference } from "@metreeca/qest/state";
+import { isArray, isBoolean, isNumber, isObject, isString, type Optional } from "@grafctory/core";
+import { isTag } from "@grafctory/core/language";
+import { array, object, type Trace } from "@grafctory/core/trace";
+import { isAtomic } from "@grafctory/qest/model";
+import { isReference } from "@grafctory/qest/state";
 import { getShapeTarget } from "../reference/index.js";
 import type { Shape } from "../value/index.js";
 import { type Scope, validateShape } from "../value/validator.js";

@@ -25,7 +25,7 @@
  *
  * > [!IMPORTANT]
  * > Contradictory constraints are rejected as the shape is built, so a shape that exists admits at least one value:
- * > stating `minInclusive` above `maxInclusive` throws a {@link @metreeca/core!TraceError | TraceError}.
+ * > stating `minInclusive` above `maxInclusive` throws a {@link @grafctory/core!TraceError | TraceError}.
  *
  * | XSD Datatype ¹  | Factory           | Description                  | Range                      |
  * | --------------- | ----------------- | ---------------------------- | -------------------------- |
@@ -66,7 +66,7 @@
  * **Defining number shapes**
  *
  * ```typescript
- * import { decimal, integer, number } from '@metreeca/blue/number';
+ * import { decimal, integer, number } from '@grafctory/blue/number';
  *
  * const count = number();                                       // unconstrained number
  * const score = number({ minInclusive: 0, maxInclusive: 100 }); // constrained range
@@ -85,7 +85,7 @@
  * Specialised factories map to XSD numeric datatypes with predefined precision:
  *
  * ```typescript
- * import { byte, double, float, int, long, short } from '@metreeca/blue/number';
+ * import { byte, double, float, int, long, short } from '@grafctory/blue/number';
  *
  * const priority = byte();       // 8-bit signed integer
  * const port = short();          // 16-bit signed integer
@@ -98,8 +98,8 @@
  * **Using in resource shapes**
  *
  * ```typescript
- * import { optional, required, resource } from '@metreeca/blue/resource';
- * import { decimal, integer } from '@metreeca/blue/number';
+ * import { optional, required, resource } from '@grafctory/blue/resource';
+ * import { decimal, integer } from '@grafctory/blue/number';
  *
  * const Product = resource({
  *   price: required(decimal({ minInclusive: 0 })),
@@ -115,9 +115,9 @@
  *     Datatypes}
  */
 
-import { isNumber } from "@metreeca/core";
-import { xsd } from "@metreeca/core/datatype";
-import type { Reference } from "@metreeca/qest/state";
+import { isNumber } from "@grafctory/core";
+import { xsd } from "@grafctory/core/datatype";
+import type { Reference } from "@grafctory/qest/state";
 import type { Legal } from "../value/inference.js";
 import { assemble } from "./assembler.js";
 
@@ -325,7 +325,7 @@ export type NumberRangeConstraints<V extends number = number> = {
  *
  * @returns An immutable shape admitting the numbers the constraints bound, narrowed to the values they enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  */
 export function number<const C extends NumberConstraints = {}>(constraints?: C): NumberShape<Legal<C, number>>;
 
@@ -369,7 +369,7 @@ export function number(...args: readonly (number | NumberConstraints)[]): Number
  *
  * @returns An immutable shape admitting 8-bit signed integers, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.w3.org/TR/xmlschema-2/#byte XSD 1.0 Part 2: Datatypes § 3.3.19 byte}
  */
@@ -401,7 +401,7 @@ export function byte<const C extends NumberRangeConstraints = {}>(constraints?: 
  *
  * @returns An immutable shape admitting 16-bit signed integers, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.w3.org/TR/xmlschema-2/#short XSD 1.0 Part 2: Datatypes § 3.3.18 short}
  */
@@ -433,7 +433,7 @@ export function short<const C extends NumberRangeConstraints = {}>(constraints?:
  *
  * @returns An immutable shape admitting 32-bit signed integers, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.w3.org/TR/xmlschema-2/#int XSD 1.0 Part 2: Datatypes § 3.3.17 int}
  */
@@ -467,7 +467,7 @@ export function int<const C extends NumberRangeConstraints = {}>(constraints?: C
  *
  * @returns An immutable shape admitting 64-bit signed integers, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.w3.org/TR/xmlschema-2/#long XSD 1.0 Part 2: Datatypes § 3.3.16 long}
  */
@@ -499,7 +499,7 @@ export function long<const C extends NumberRangeConstraints = {}>(constraints?: 
  *
  * @returns An immutable shape admitting single-precision floats, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.w3.org/TR/xmlschema-2/#float XSD 1.0 Part 2: Datatypes § 3.2.4 float}
  */
@@ -529,7 +529,7 @@ export function float<const C extends NumberRangeConstraints = {}>(constraints?:
  *
  * @returns An immutable shape admitting double-precision floats, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.w3.org/TR/xmlschema-2/#double XSD 1.0 Part 2: Datatypes § 3.2.5 double}
  */
@@ -550,7 +550,7 @@ export function double<const C extends NumberRangeConstraints = {}>(constraints?
  *
  * @returns An immutable shape admitting arbitrary-precision integers, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.w3.org/TR/xmlschema-2/#integer XSD 1.0 Part 2: Datatypes § 3.3.13 integer}
  */
@@ -571,7 +571,7 @@ export function integer<const C extends NumberRangeConstraints = {}>(constraints
  *
  * @returns An immutable shape admitting arbitrary-precision decimals, narrowed to the values the constraints enumerate
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where the stated constraints contradict one another
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where the stated constraints contradict one another
  *
  * @see {@link https://www.w3.org/TR/xmlschema-2/#decimal XSD 1.0 Part 2: Datatypes § 3.2.3 decimal}
  */

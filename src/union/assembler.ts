@@ -24,9 +24,9 @@
  * @module
  */
 
-import { isFunction, type Optional } from "@metreeca/core";
-import { immutable } from "@metreeca/core/values";
-import { array, type Trace } from "@metreeca/core/trace";
+import { isFunction, type Optional } from "@grafctory/core";
+import { immutable } from "@grafctory/core/values";
+import { array, type Trace } from "@grafctory/core/trace";
 import { mergeShape, narrowsShape, reject } from "../value/assembler.js";
 import { getShapeBranches } from "./accessors.js";
 import type { UnionBranches, UnionShape } from "./index.js";
@@ -97,7 +97,7 @@ export function narrowsUnion(target: UnionShape, source: UnionShape): Optional<T
  *
  * @returns An immutable shape admitting the values both `target` and `source` admit
  *
- * @throws {@link @metreeca/core!TraceError | TraceError} Where `target` doesn't narrow `source`
+ * @throws {@link @grafctory/core!TraceError | TraceError} Where `target` doesn't narrow `source`
  */
 export function mergeUnion(target: UnionShape, source: UnionShape): UnionShape {
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { xsd } from "@metreeca/core/datatype";
+import { xsd } from "@grafctory/core/datatype";
 import { describe, expect, it } from "vitest";
 import {
 	byte,

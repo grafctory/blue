@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import type { Lazy, Optional } from "@metreeca/core";
-import type { Reference, Value } from "@metreeca/qest/state";
+import type { Lazy, Optional } from "@grafctory/core";
+import type { Reference, Value } from "@grafctory/qest/state";
 import { describe, expectTypeOf, it } from "vitest";
 import { reference } from "../reference/index.js";
 import { id, multiple, required, resource, type ResourceShape } from "../resource/index.js";

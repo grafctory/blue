@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { createNamespace } from "@metreeca/core/resource";
-import { TraceError } from "@metreeca/core/trace";
+import { createNamespace } from "@grafctory/core/resource";
+import { TraceError } from "@grafctory/core/trace";
 import { describe, expect, it } from "vitest";
 import { reference } from "../reference/index.js";
 import { string } from "../string/index.js";

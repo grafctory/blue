@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { type Optional } from "@metreeca/core";
-import type { Relay } from "@metreeca/core/relay";
-import { createNamespace } from "@metreeca/core/resource";
-import { type Trace, TraceError } from "@metreeca/core/trace";
+import { type Optional } from "@grafctory/core";
+import type { Relay } from "@grafctory/core/relay";
+import { createNamespace } from "@grafctory/core/resource";
+import { type Trace, TraceError } from "@grafctory/core/trace";
 import { describe, expect, it } from "vitest";
 import { boolean } from "./boolean/index.js";
 import { dictionary } from "./dictionary/index.js";

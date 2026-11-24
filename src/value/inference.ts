@@ -28,9 +28,9 @@
  * @module
  */
 
-import type { Eager, Lazy, Optional } from "@metreeca/core";
-import type { Atomic, Binding, Criteria, Locale, Projection, Query, Union } from "@metreeca/qest/model";
-import type { Reference, Value, Values } from "@metreeca/qest/state";
+import type { Eager, Lazy, Optional } from "@grafctory/core";
+import type { Atomic, Binding, Criteria, Locale, Projection, Query, Union } from "@grafctory/qest/model";
+import type { Reference, Value, Values } from "@grafctory/qest/state";
 import type { BooleanShape } from "../boolean/index.js";
 import type { Coalesced, Tagged } from "../dictionary/inference.js";
 import type { DictionaryShape } from "../dictionary/index.js";
@@ -253,7 +253,7 @@ type Strays<T, K extends PropertyKey> =
  * Resolves the retrieval models allowed for selecting resources.
  *
  * A selection model is either a {@link Model | template} allowed by the shape or a
- * {@link @metreeca/qest!Projection | projection} computing rows, each merged with filtering, ordering and pagination
+ * {@link @grafctory/qest!Projection | projection} computing rows, each merged with filtering, ordering and pagination
  * criteria. A model passed as `T` must fit one of the two entirely: unknown members mixed with known ones, and members
  * mixed with projection bindings, fail to compile.
  *
