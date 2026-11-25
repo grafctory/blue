@@ -1,11 +1,16 @@
 # @grafctory/blue
 
-[![npm](https://img.shields.io/npm/v/@grafctory/blue)](https://www.npmjs.com/package/@grafctory/blue)
+[![npm][npm-badge]][npm]
+
+[npm-badge]: https://img.shields.io/npm/v/@grafctory/blue
+[npm]: https://www.npmjs.com/package/@grafctory/blue
+[grafctory]: https://github.com/grafctory
 
 Declarative blueprints for model-driven linked data processing.
 
-**@grafctory/blue** provides a shape-based schema framework for the linked data model defined
-by [@grafctory/qest](https://grafctory.github.io/qest/).
+**@grafctory/blue** is the schema module of the [Grafctory][grafctory] model-driven knowledge graph framework. It
+describes resources as shapes over the data model defined by [@grafctory/qest], and the same shapes drive storage in
+[@grafctory/keep] and HTTP endpoints in [@grafctory/gate].
 
 Shape-based schemas go beyond structural validation, capturing the complete semantics of a resource (structure,
 constraints, metadata, and relationships), enabling them to act as a single source of truth for automated validation,
@@ -23,11 +28,9 @@ validation engine:
 - **Actionable Error Feedback**: per-value, per-property traces surface precise violations
 - **Custom When Needed**: pluggable validators extend built-in constraints
 
-> [!NOTE]
->
-> **@grafctory/blue** is part of the
-> [@grafctory/qest integrated ecosystem](https://github.com/grafctory/qest#ecosystem)
-> for rapid development of linked data applications.
+[@grafctory/qest]: https://github.com/grafctory/qest
+[@grafctory/keep]: https://github.com/grafctory/keep
+[@grafctory/gate]: https://github.com/grafctory/gate
 
 # Installation
 
@@ -48,15 +51,15 @@ npm install @grafctory/blue
 >
 > | Module                       | Description                           |
 > |------------------------------|---------------------------------------|
-> | [@grafctory/blue]             | Linked data validation                |
-> | [@grafctory/blue/value]       | Value shape types and operations      |
-> | [@grafctory/blue/boolean]     | Boolean shape types and operations    |
-> | [@grafctory/blue/number]      | Number shape types and operations     |
-> | [@grafctory/blue/string]      | String shape types and operations     |
-> | [@grafctory/blue/dictionary]  | Dictionary shape types and operations |
-> | [@grafctory/blue/reference]   | Reference shape types and operations  |
-> | [@grafctory/blue/resource]    | Resource shape types and operations   |
-> | [@grafctory/blue/union]       | Union shape types and operations      |
+> | [@grafctory/blue]            | Linked data validation                |
+> | [@grafctory/blue/value]      | Value shape types and operations      |
+> | [@grafctory/blue/boolean]    | Boolean shape types and operations    |
+> | [@grafctory/blue/number]     | Number shape types and operations     |
+> | [@grafctory/blue/string]     | String shape types and operations     |
+> | [@grafctory/blue/dictionary] | Dictionary shape types and operations |
+> | [@grafctory/blue/reference]  | Reference shape types and operations  |
+> | [@grafctory/blue/resource]   | Resource shape types and operations   |
+> | [@grafctory/blue/union]      | Union shape types and operations      |
 
 [@grafctory/blue]: https://grafctory.github.io/blue/modules/index.html
 
@@ -89,6 +92,7 @@ import { string, url } from "@grafctory/blue/string";
 import { dictionary } from "@grafctory/blue/dictionary";
 import { reference } from "@grafctory/blue/reference";
 import { id, multiple, optional, required, resource, type } from "@grafctory/blue/resource";
+
 
 function Thing() {
 	return resource({
@@ -147,15 +151,15 @@ counterparts are.
 
 A `dictionary()` range stands apart: a localised property carries its language map whole, never in an array, so it is
 typed as the bare map at every cardinality. Where a dictionary sits in a union beside other branches, the property is
-typed as either the map or the array those branches imply, since a resource carries one or the other and never both,
-and the bounds count the other branches alone.
+typed as either the map or the array those branches imply, since a resource carries one or the other and never both, and
+the bounds count the other branches alone.
 
-Each factory takes the constraints the property carries beyond its cardinality, such as IRI mappings, labels,
-ownership flags, or a `hidden` flag withholding it from default serialisation, as a trailing argument:
+Each factory takes the constraints the property carries beyond its cardinality, such as IRI mappings, labels, ownership
+flags, or a `hidden` flag withholding it from default serialisation, as a trailing argument:
 `required(string(), { forward: schema })`. The `id()` and `type()` markers take the same `hidden` flag.
 
-Cardinalities admitting absence also relax their key to an optional one, so a value literal spells out only the
-members it actually carries; reading an omitted member still yields `undefined`.
+Cardinalities admitting absence also relax their key to an optional one, so a value literal spells out only the members
+it actually carries; reading an omitted member still yields `undefined`.
 
 Resource members link to other resources in two ways. A `reference()` wrapper links to a **standalone resource**, an
 independently identified and managed entity like `Vendor`. A direct shape inclusion defines an **embedded resource**, a
@@ -165,15 +169,17 @@ Properties accepting values of more than one type are modelled as unions of posi
 regime: a stored **value** must single out **exactly one** branch (`sh:xone`), tested against all constraints, and is
 rejected when it fits several (ambiguous) or none (unsatisfiable); a relational **bound** must likewise single out
 exactly one, but keys on syntactic traits alone, as it need not be a legal value; a retrieval **placeholder** is tested
-by form alone and must fit **at least one** branch (`sh:or`), may fit several, and is rejected only when it fits
-none (see [Validating Templates](#validating-templates)). A multi-valued property matches each of its values
-independently, and values are stored as they stand with no branch wrapping.
+by form alone and must fit **at least one** branch (`sh:or`), may fit several, and is rejected only when it fits none
+(see [Validating Templates](#validating-templates)). A multi-valued property matches each of its values independently,
+and values are stored as they stand with no branch wrapping.
 
 Branches are expected to be **disjoint**: overlapping ones are accepted as the shape is built, and an ambiguous value is
 rejected only when it is matched. Either of the following representations is accepted at the same `address` position:
 
 ```json
-{ "address": "12 Harbour Street, Copenhagen" }
+{
+  "address": "12 Harbour Street, Copenhagen"
+}
 ```
 
 ```json
@@ -189,19 +195,19 @@ rejected only when it is matched. Either of the following representations is acc
 
 Declare parent shapes first to inherit their members and constraints. Local members augment the parent and may override
 inherited ones, but only by *narrowing*: an override restricts what it inherits and never relaxes it. Cardinality
-narrows monotonically (`required` may override `optional`, but not the reverse), per-kind constraints intersect, and
-the override is rejected at the call site when the child relaxes the parent. Names and descriptions restrict no value,
-so an override may replace the ones it inherits to present the member in the terms of the child.
+narrows monotonically (`required` may override `optional`, but not the reverse), per-kind constraints intersect, and the
+override is rejected at the call site when the child relaxes the parent. Names and descriptions restrict no value, so an
+override may replace the ones it inherits to present the member in the terms of the child.
 
 ```ts
 const NamedThing = resource({
-    id: id(),
-    name: required(string({ minLength: 1 }))
+	id: id(),
+	name: required(string({ minLength: 1 }))
 });
 
 const Vendor = resource(NamedThing, {
-    name: required(string({ minLength: 3, maxLength: 80 })), // narrows minLength
-    rating: optional(number({ minInclusive: 0, maxInclusive: 5 }))
+	name: required(string({ minLength: 3, maxLength: 80 })), // narrows minLength
+	rating: optional(number({ minInclusive: 0, maxInclusive: 5 }))
 });
 ```
 
@@ -209,47 +215,47 @@ const Vendor = resource(NamedThing, {
 
 A member holding a nested resource or a `reference(...)` is refined by re-pointing it at a shape that extends the
 inherited target. The refining shape declares only what it adds or narrows: it reaches the inherited definition through
-its own parents, so the parent definition is never restated. A `reference(...)` target that doesn't extend the
-inherited one, the inherited target's own parent included, is rejected at the call site; a target deferred to break a
-definition cycle is held to the same rule once its definition stands, so shapes reaching themselves or each other may
-be re-pointed just as well.
+its own parents, so the parent definition is never restated. A `reference(...)` target that doesn't extend the inherited
+one, the inherited target's own parent included, is rejected at the call site; a target deferred to break a definition
+cycle is held to the same rule once its definition stands, so shapes reaching themselves or each other may be re-pointed
+just as well.
 
 ```ts
 const Organization = resource({
-    class: "https://schema.org/Organization"
+	class: "https://schema.org/Organization"
 }, {
-    id: id(),
-    name: required(string())
+	id: id(),
+	name: required(string())
 });
 
 const University = resource(Organization, { class: "https://ec2u.eu/University" }, {
-    country: required(string())
+	country: required(string())
 });
 
 const Unit = resource({
-    id: id(),
-    unitOf: required(reference(Organization)), // referenced target
-    host: required(Organization)               // embedded target
+	id: id(),
+	unitOf: required(reference(Organization)), // referenced target
+	host: required(Organization)               // embedded target
 });
 
 const ResearchUnit = resource(Unit, {
-    unitOf: required(reference(University)),   // re-pointed at the extending target
-    host: required(University)
+	unitOf: required(reference(University)),   // re-pointed at the extending target
+	host: required(University)
 });
 ```
 
 Extending the inherited target is what makes the refinement legal for an embedded member: a nested resource value must
-belong to every `class` the inherited target declares, whether the refining shape states it in its own right or
-inherits it, so a standalone shape that merely repeats the inherited members is rejected.
+belong to every `class` the inherited target declares, whether the refining shape states it in its own right or inherits
+it, so a standalone shape that merely repeats the inherited members is rejected.
 
 ### Narrowing Union Members
 
 When the parent declares a `union(...)` member, an extending shape may narrow it in two forms:
 
 - **Single-branch narrowing**: the child supplies a non-union shape that narrows exactly one of the parent's branches.
-  The merged member becomes a bare value shape, no longer polymorphic.
+	The merged member becomes a bare value shape, no longer polymorphic.
 - **Branch subsetting**: the child supplies a smaller `union(...)`; each child branch narrows a distinct parent branch
-  (an injective pairing), the paired branches are merged, and unpaired parent branches are dropped.
+	(an injective pairing), the paired branches are merged, and unpaired parent branches are dropped.
 
 A child branch narrowing no parent branch, several, or one already claimed by another child branch is rejected at the
 call site.
@@ -280,6 +286,7 @@ Schemas double as TypeScript type definitions. `State` yields the value a resour
 
 ```ts
 import { type State } from "@grafctory/blue/value";
+
 
 type ProductType = State<typeof Product>;
 
@@ -312,6 +319,7 @@ than everything the schema declares:
 ```ts
 import { type Match } from "@grafctory/blue/value";
 
+
 type ProductSummary = Match<typeof Product, { id: {}, price: {} }>;
 
 // {
@@ -328,20 +336,22 @@ The retrieval models themselves are held to the schema where they are written:
 
 - `Model` admits the templates a resource shape serves, rejecting a member the shape doesn't carry
 - `Slice` admits the models a collection held by a property serves, merged with the criteria filtering, ordering and
-  paginating it
+	paginating it
 - `Items` types the items of such a collection, narrowed to what the model asked for
 - `Frame` types a single item of such a collection, for code generic over the schema and the model
 
-The `items` accessor gets those items from the resource a slice retrieval returns, typed as `Items`, without looking
-up the collection property by name.
+The `items` accessor gets those items from the resource a slice retrieval returns, typed as `Items`, without looking up
+the collection property by name.
 
 ## Validating Resources
 
 The overloaded `validate` function checks a value against a schema and returns a
-[Relay](https://grafctory.github.io/core/interfaces/relay.Relay.html) that dispatches to either a `value` or `trace` handler:
+[Relay](https://grafctory.github.io/core/interfaces/relay.Relay.html) that dispatches to either a `value` or `trace`
+handler:
 
 ```ts
 import { validate } from "@grafctory/blue";
+
 
 validate(data, { shape: Product })({
 	value: product => {
@@ -371,6 +381,7 @@ members the template asked for are checked, and the result is narrowed to them:
 ```ts
 import { validate } from "@grafctory/blue";
 
+
 const model = { id: {}, name: {} }; // projection requested by the caller
 
 validate(response, { shape: Product, model })({
@@ -384,12 +395,11 @@ validate(response, { shape: Product, model })({
 ```
 
 Constraints on members absent from `model` are not enforced, so an unrequested required member triggers no `minCount`
-violation, nor does a polymorphic member coming back empty where the template reaches only some of its variants, as
-the resource may hold another. A member the template didn't ask for is rejected all the same, as the caller has
-nowhere to put it. A
-reference member additionally accepts an expanded nested resource, validated against the target shape narrowed by the
-nested projection in `model`. Custom validators are not run, as they are written against a whole resource rather than
-the part of it a template asked for, even where the template asks for every member.
+violation, nor does a polymorphic member coming back empty where the template reaches only some of its variants, as the
+resource may hold another. A member the template didn't ask for is rejected all the same, as the caller has nowhere to
+put it. A reference member additionally accepts an expanded nested resource, validated against the target shape narrowed
+by the nested projection in `model`. Custom validators are not run, as they are written against a whole resource rather
+than the part of it a template asked for, even where the template asks for every member.
 
 ## Validating Templates
 
@@ -398,6 +408,7 @@ The same `validate` function validates retrieval
 
 ```ts
 import { validate } from "@grafctory/blue";
+
 
 validate(data, { model: true, shape: Product });
 validate(data, { model: true, shape: Product, plain: true });
@@ -430,21 +441,21 @@ no collection to narrow, and a localised member is filtered by its own tag range
 What each kind of member may be asked for:
 
 - **Reference**: either the atomic placeholder, retrieving the identifier naming the target, or a nested template
-  validated against the target shape. An embedded resource, naming no identifier to come back as, is reached through a
-  template alone.
-- **Union**: the keyed form (`{"0": …, "1": …}`), one placeholder per alternative wanted, where the alternatives
-  want different shapes; where one shape serves them all, the atomic placeholder addresses the property directly.
-  Keys are opaque labels carrying no positional meaning: each placeholder is matched by form alone and retrieves
-  every branch it fits. The atomic placeholder requests every branch coming back as a value. A nested template reaches
-  every resource branch admitting at least one of the members it asks for, so it may span several, each answering the
-  members it admits. A member several branches declare may take a different shape in each, and what is asked for it
-  need fit only one of them. Only a placeholder fitting no branch at all is rejected. A tag range may also be a
-  member name, so an object whose keys each name a member of a resource branch is read as a template, and any other
-  object as a map of tag ranges.
+	validated against the target shape. An embedded resource, naming no identifier to come back as, is reached through a
+	template alone.
+- **Union**: the keyed form (`{"0": …, "1": …}`), one placeholder per alternative wanted, where the alternatives want
+	different shapes; where one shape serves them all, the atomic placeholder addresses the property directly. Keys are
+	opaque labels carrying no positional meaning: each placeholder is matched by form alone and retrieves every branch it
+	fits. The atomic placeholder requests every branch coming back as a value. A nested template reaches every resource
+	branch admitting at least one of the members it asks for, so it may span several, each answering the members it
+	admits. A member several branches declare may take a different shape in each, and what is asked for it need fit only
+	one of them. Only a placeholder fitting no branch at all is rejected. A tag range may also be a member name, so an
+	object whose keys each name a member of a resource branch is read as a template, and any other object as a map of tag
+	ranges.
 - **Localised**: a map of the tag ranges wanted, each asking for the value a matched tag carries, or the atomic
-  placeholder, standing for the content language negotiation settles on. Per-tag arity follows the shape rather than
-  the template. A localised branch of a union takes the map under a branch map, or directly on the member if no
-  other branch reaches a resource, since the map then cannot be read as a template.
+	placeholder, standing for the content language negotiation settles on. Per-tag arity follows the shape rather than the
+	template. A localised branch of a union takes the map under a branch map, or directly on the member if no other branch
+	reaches a resource, since the map then cannot be read as a template.
 
 Constraint operands follow their own rules: comparison bounds and set-matching options carry content rather than
 placeholders, so each must single out exactly one branch, a bound keying on kind and lexical pattern and an option on
@@ -458,7 +469,7 @@ Three options bound the query language a template may draw on:
 - **`plain`**: rejects the aggregate transforms combining several values into one (`count`, `sum`, `min`, `max`, `avg`)
 - **`depth`**: caps nested template expansion and property path length
 - **`limit`**: caps the `#` pagination constraint, and is injected as a default where a collection states none; `0`,
-  like omitting it, leaves the page to the client
+	like omitting it, leaves the page to the client
 
 > [!CAUTION]
 >
@@ -473,27 +484,27 @@ describing and validating RDF graphs. It defines *shapes* (sets of constraints t
 covering structure, cardinality, value ranges, and logical combinations.
 
 **@grafctory/blue** implements a controlled SHACL subset tailored to the
-[JSON-LD](https://www.w3.org/TR/json-ld11/) profile defined by [@grafctory/qest](https://grafctory.github.io/qest/),
-enabling TypeScript developers to use shape-based validation without mastering SHACL technicalities.
+[JSON-LD](https://www.w3.org/TR/json-ld11/) profile defined by [@grafctory/qest], enabling TypeScript developers to use
+shape-based validation without mastering SHACL technicalities.
 
 This controlled subset is specified by:
 
 - [cardinality constraints](https://www.w3.org/TR/shacl/#core-components-count) (`sh:minCount`, `sh:maxCount`)
-  for specifying how many values a property must or may have
+	for specifying how many values a property must or may have
 - [value range constraints](https://www.w3.org/TR/shacl/#core-components-range) (`sh:minExclusive`,
-  `sh:maxExclusive`, `sh:minInclusive`, `sh:maxInclusive`) for numeric value ranges
+	`sh:maxExclusive`, `sh:minInclusive`, `sh:maxInclusive`) for numeric value ranges
 - [string constraints](https://www.w3.org/TR/shacl/#core-components-string) (`sh:minLength`, `sh:maxLength`,
-  `sh:pattern`, `sh:languageIn`, `sh:uniqueLang`) for text length, patterns, and language tags
+	`sh:pattern`, `sh:languageIn`, `sh:uniqueLang`) for text length, patterns, and language tags
 - [value type constraints](https://www.w3.org/TR/shacl/#core-components-value-type) (`sh:class`, `sh:datatype`) for
-  declaring the expected type of resource instances and the RDF datatype of literals; `sh:class` is limited to a single
-  class
+	declaring the expected type of resource instances and the RDF datatype of literals; `sh:class` is limited to a single
+	class
 - [value constraints](https://www.w3.org/TR/shacl/#core-components-others) (`sh:in`, `sh:hasValue`) for enumerations and
-  required values
+	required values
 - [logical constraints](https://www.w3.org/TR/shacl/#core-components-logical) limited to `sh:xone` typed unions on
-  members, matched exactly-one on write and relaxed to at-least-one (`sh:or`) on read; the `sh:not`, `sh:and`, and
-  `sh:or` shape combinators are not supported for authoring
+	members, matched exactly-one on write and relaxed to at-least-one (`sh:or`) on read; the `sh:not`, `sh:and`, and
+	`sh:or` shape combinators are not supported for authoring
 - [closed shapes](https://www.w3.org/TR/shacl/#ClosedConstraintComponent) enforced by default on all resource shapes;
-  unknown properties are always rejected
+	unknown properties are always rejected
 
 [Property pair constraints](https://www.w3.org/TR/shacl/#core-components-property-pairs) and
 [property paths](https://www.w3.org/TR/shacl/#property-paths) are not supported; cross-property logic can be implemented
@@ -508,3 +519,5 @@ via custom [validators](https://grafctory.github.io/blue/modules/resource.html).
 
 This project is licensed under the Apache 2.0 License –
 see [LICENSE](https://github.com/grafctory/blue?tab=Apache-2.0-1-ov-file) file for details.
+
+<sub>Grafctory™ is a trademark of Metreeca srl.</sub>
