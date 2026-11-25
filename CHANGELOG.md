@@ -10,20 +10,20 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased](https://github.com/grafctory/blue/compare/v0.15.1...HEAD)
 
-## [0.15.1](https://github.com/metreeca/blue/compare/v0.15.0...v0.15.1) - 2026-11-24
+## [0.15.1](https://github.com/grafctory/blue/compare/v0.15.0...v0.15.1) - 2026-11-24
 
 ### Changed
 
 - Maintenance release with no change to the published API or behaviour
 
-## [0.15.0](https://github.com/metreeca/blue/compare/v0.14.0...v0.15.0) - 2026-11-19
+## [0.15.0](https://github.com/grafctory/blue/compare/v0.14.0...v0.15.0) - 2026-11-19
 
 ### Changed
 
 - **Breaking**: Upgrade `@metreeca/qest` to `^0.15.0`; projects using it alongside this package raise their own range
   as well, so that it is shared as a single copy across the project rather than installed once per consumer
 
-## [0.14.0](https://github.com/metreeca/blue/compare/v0.13.1...v0.14.0) - 2026-11-17
+## [0.14.0](https://github.com/grafctory/blue/compare/v0.13.1...v0.14.0) - 2026-11-17
 
 ### Added
 
@@ -36,7 +36,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   this package raise their own ranges as well, so that each of them is shared as a single copy across the project
 - Let a member override replace the `name` and `description` it inherits, rather than repeating the parent's
   wording: the extending shape labels and describes the member in its own terms, and the parent keeps its own; parents
-  disagreeing on either now require the extending shape to state it ([#43](https://github.com/metreeca/blue/issues/43))
+  disagreeing on either now require the extending shape to state it ([#43](https://github.com/grafctory/blue/issues/43))
 - Admit a `foreign` or `captive` facet on a member overriding one its parent left unstated, rather than rejecting any
   facet the parent doesn't state: a facet stated on one side alone is carried into the merged member, and one stated
   on both sides must still be stated alike by the override and the parent it narrows, as in earlier releases
@@ -51,40 +51,40 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Accept a locale asked for on a member pairing localised text with other variants, under a branch map or directly on
   the member if no other variant reaches a resource, rather than within a projection column alone; retrieved results
   no longer report a missing required member whose template reaches only some of its variants, and admit coalesced
-  text wherever any variant admits it ([#35](https://github.com/metreeca/blue/issues/35))
+  text wherever any variant admits it ([#35](https://github.com/grafctory/blue/issues/35))
 - Accept an ordering (`^`) or sort focus (`+`) naming a grouping key of a projection even if the member it reaches is
   multi-valued: a grouping key holds one value per group, so `validateTemplate` no longer rejects it as unrankable
 - Keep the lower bound `effective` resolves for a piped probe wherever the pipe always reaches a value, leaving it
   unstated only where the pipe may drop an alternative, read a localised value through negotiation, or extract a
-  temporal component the value doesn't state, as `hours` from a date ([#37](https://github.com/metreeca/blue/issues/37))
+  temporal component the value doesn't state, as `hours` from a date ([#37](https://github.com/grafctory/blue/issues/37))
 - **Breaking**: Resolve a member stated by several extended shapes to the narrowest definition whatever order the
   shapes are listed in, at runtime and in the inferred types alike, rather than letting the listing order settle it; a
   redeclaration is now held to every extended shape, and a member no single inherited definition narrows is rejected:
-  redeclare it on the extending shape, narrowing every parent ([#38](https://github.com/metreeca/blue/issues/38))
+  redeclare it on the extending shape, narrowing every parent ([#38](https://github.com/grafctory/blue/issues/38))
 - Accept a `/*` wildcard standing alone on the root path of an identifier `pattern`, admitting every identifier under
   the origin, and a pattern closed by a trailing `/`, matching only the container identifier ending in that slash;
   `resource()` now rejects a malformed pattern when the shape is declared, rather than leaving the `TypeError` to the
-  first validation of a value ([#41](https://github.com/metreeca/blue/issues/41))
+  first validation of a value ([#41](https://github.com/grafctory/blue/issues/41))
 - Keep an embedded resource shape inherited alike along several paths as declared, rather than copying it at each
   merge, so that `model()` lists it once and consumers comparing shapes by reference see a single shape, as a diamond
-  inheriting one declaration does ([#42](https://github.com/metreeca/blue/issues/42))
+  inheriting one declaration does ([#42](https://github.com/grafctory/blue/issues/42))
 - **Breaking**: Key the trace `validate` returns by the member or slot at fault, as documented, rather than nesting it
   under the identifier or position of the validated value: callers reading `trace[id][member]` now read `trace[member]`
 
-## [0.13.1](https://github.com/metreeca/blue/compare/v0.13.0...v0.13.1) - 2026-10-22
+## [0.13.1](https://github.com/grafctory/blue/compare/v0.13.0...v0.13.1) - 2026-10-22
 
 ### Fixed
 
 - Reject a resource shape embedding itself again, directly or through other embedded resources and unions of them, as
   the deferred definition closing the cycle is resolved: an embedded resource is carried inline, so such a shape
-  admitted no finite value, and `schema` overflowed the stack on it ([#34](https://github.com/metreeca/blue/issues/34))
+  admitted no finite value, and `schema` overflowed the stack on it ([#34](https://github.com/grafctory/blue/issues/34))
 
 ### Security
 
 - Upgrade `vite` to `8.3.5`, `vitest` to `4.1.12` and `markdown-it` to `14.3.3`, clearing the advisories `npm audit`
   raised against them (development dependencies only, so applications installing the package are unaffected)
 
-## [0.13.0](https://github.com/metreeca/blue/compare/v0.12.1...v0.13.0) - 2026-10-19
+## [0.13.0](https://github.com/grafctory/blue/compare/v0.12.1...v0.13.0) - 2026-10-19
 
 ### Added
 
@@ -111,7 +111,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Upgrade `@metreeca/core` to `^0.13.0`
 - Upgrade `@metreeca/qest` to `^0.13.0`
 
-## [0.12.1](https://github.com/metreeca/blue/compare/v0.12.0...v0.12.1) - 2026-10-14
+## [0.12.1](https://github.com/grafctory/blue/compare/v0.12.0...v0.12.1) - 2026-10-14
 
 ### Fixed
 
@@ -125,7 +125,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Published exports declare the `@metreeca/source` condition, resolving each entry point to its TypeScript source in
   checkouts linked for local development, while registry consumers keep resolving to the compiled `dist` modules
 
-## [0.12.0](https://github.com/metreeca/blue/compare/v0.11.0...v0.12.0) - 2026-10-01
+## [0.12.0](https://github.com/grafctory/blue/compare/v0.11.0...v0.12.0) - 2026-10-01
 
 ### Added
 
@@ -154,7 +154,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   template only where what it asks for a member is admitted by no branch; a member several branches declare may take a
   different shape in each, and what is asked for it need fit only one of them
 
-## [0.11.0](https://github.com/metreeca/blue/compare/v0.10.0...v0.11.0) - 2026-10-01
+## [0.11.0](https://github.com/grafctory/blue/compare/v0.10.0...v0.11.0) - 2026-10-01
 
 ### Added
 
@@ -250,7 +250,7 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   `Inheritance`, `Intersected`, `Merged`, `Narrowings`, `Override`, `Prototype`, `Relaxed` and `Slot` are no longer
   exported, the surviving ones serving shape and value resolution from modules of their own
 
-## [0.10.0](https://github.com/metreeca/blue/compare/v0.9.1...v0.10.0) - 2026-09-09
+## [0.10.0](https://github.com/grafctory/blue/compare/v0.9.1...v0.10.0) - 2026-09-09
 
 ### Added
 
@@ -404,6 +404,6 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   input widens to `integer`, fractional or unconstrained numeric input to `decimal`, while `min`/`max` continue to
   preserve the input shape verbatim
 
-## [0.9.1](https://github.com/metreeca/blue/releases/tag/v0.9.1)
+## [0.9.1](https://github.com/grafctory/blue/releases/tag/v0.9.1)
 
 Initial release.
