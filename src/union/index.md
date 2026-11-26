@@ -168,13 +168,13 @@ A relational **bound** must single out **exactly one** branch, since a processor
 value against, but it is **not** a legal element value: a comparison filters by order, so `>= 8` over a
 `[1, 5]` domain is a legal query returning nothing, not an error. Testing a bound against all constraints would wrongly
 reject it, so a bound relaxes the **value-domain facets** (numeric bounds `minInclusive` … `maxExclusive`, `integral`,
-string length, `languageIn`, `in`, `hasValue`) and keys **only on the syntactic traits** that pin a branch: the value's
-processing `kind` and, where literal branches share a kind, their lexical `pattern`. A bound matching several branches
-is ambiguous and one matching none unsatisfiable, both rejected. Because it is matched by syntactic form alone, a bound
-requires the union to be **literally disjoint** (see *State*, above); a union that is not is rejected at runtime by the
-ambiguous-match rule. A **localised** branch takes a bound as a plain string, compared against the strings its tags
-carry, so a plain string bound over a string branch and a localised one is ambiguous. Links and embedded resources have
-no order and take no bound.
+string length, `languageIn`, `hasLanguage`, `in`, `hasValue`) and keys **only on the syntactic traits** that pin a
+branch: the value's processing `kind` and, where literal branches share a kind, their lexical `pattern`. A bound
+matching several branches is ambiguous and one matching none unsatisfiable, both rejected. Because it is matched by
+syntactic form alone, a bound requires the union to be **literally disjoint** (see *State*, above); a union that is
+not is rejected at runtime by the ambiguous-match rule. A **localised** branch takes a bound as a plain string,
+compared against the strings its tags carry, so a plain string bound over a string branch and a localised one is
+ambiguous. Links and embedded resources have no order of their own, so a branch of either kind takes no bound.
 
 A set-matching **option** must likewise single out **exactly one** branch, and is likewise **not** held to a legal
 element value: a filter tests membership by equality, so an option outside the domain is a legal query matching nothing,

@@ -393,6 +393,104 @@ describe("validateDictionary", () => {
 
 	});
 
+	describe("hasLanguage constraint", () => {
+
+		const missing = expect.stringContaining("{hasLanguage}");
+
+		it("returns undefined when every required range is matched by a tag", async () => {
+
+			expect(validateDictionary(
+				[{ en: "hello", fr: "bonjour" }],
+				dictionary({ uniqueLang: true, hasLanguage: ["en", "fr"] })
+			)).toBeUndefined();
+
+		});
+
+		it("matches a required range by basic filtering", async () => {
+
+			expect(validateDictionary(
+				[{ "en-US": "color" }],
+				dictionary({ uniqueLang: true, hasLanguage: ["en"] })
+			)).toBeUndefined();
+
+		});
+
+		it("rejects a base language where only a subtag is required", async () => {
+
+			expect(validateDictionary(
+				[{ en: "hello" }],
+				dictionary({ uniqueLang: true, hasLanguage: ["en-US"] })
+			)).toContainEqual(missing);
+
+		});
+
+		it("leads the trace with the unmatched ranges, as the map as a whole is at fault", async () => {
+
+			expect(validateDictionary(
+				[{ fr: "bonjour" }],
+				dictionary({ uniqueLang: true, hasLanguage: ["en"] })
+			)).toEqual([missing]);
+
+		});
+
+		it("matches the wildcard by any entry, so as to require a non-empty map", async () => {
+
+			const shape = dictionary({ uniqueLang: true, hasLanguage: ["*"] });
+
+			expect(validateDictionary([{ zxx: "ISO-639" }], shape)).toBeUndefined();
+			expect(validateDictionary([{}], shape)).toEqual([missing]);
+
+		});
+
+		// an absent value never matches, as with the hasValue constraint of the other shapes
+
+		it("rejects empty values", async () => {
+
+			expect(validateDictionary([], dictionary({ hasLanguage: ["en"] }))).toEqual([missing]);
+
+		});
+
+		it("does not count a tag carrying an empty array", async () => {
+
+			const shape = dictionary({ hasLanguage: ["en"] });
+
+			expect(validateDictionary([{ en: ["hello"] }], shape)).toBeUndefined();
+			expect(validateDictionary([{ en: [] }], shape)).toEqual([missing]);
+
+		});
+
+		it("matches required ranges across every map in the set", async () => {
+
+			expect(validateDictionary(
+				[{ en: "hello" }, { fr: "bonjour" }],
+				dictionary({ uniqueLang: true, hasLanguage: ["en", "fr"] })
+			)).toBeUndefined();
+
+		});
+
+		it("does not count an entry stated at the other arity", async () => {
+
+			expect(validateDictionary(
+				[{ en: ["hello"] }],
+				dictionary({ uniqueLang: true, hasLanguage: ["en"] })
+			)).toContainEqual(missing);
+
+		});
+
+		it("returns undefined for an empty array of required ranges", async () => {
+
+			expect(validateDictionary([], dictionary({ hasLanguage: [] }))).toBeUndefined();
+
+		});
+
+		it("is not enforced at model scope, which checks the form alone", async () => {
+
+			expect(validateDictionary([{}], dictionary({ hasLanguage: ["en"] }), { scope: "model" })).toBeUndefined();
+
+		});
+
+	});
+
 	describe("model scope", () => {
 
 		const unique = dictionary({ uniqueLang: true });

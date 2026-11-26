@@ -26,6 +26,7 @@
  */
 
 import { type Optional } from "@grafctory/core";
+import { type TagRange } from "@grafctory/core/language";
 import { immutable } from "@grafctory/core/values";
 import { all, test, type Trace } from "@grafctory/core/trace";
 import { reject } from "../value/assembler.js";
@@ -79,23 +80,35 @@ export function assemble<U extends undefined | boolean>(constraints: DictionaryC
  */
 export function checkDictionary(constraints: DictionaryConstraints): Optional<Trace> {
 
-	return test<typeof constraints>(({ minLength, maxLength }) => {
+	return all<DictionaryConstraints>(
+		test(({ minLength, maxLength }) => {
 
-		return minLength === undefined || maxLength === undefined || minLength <= maxLength || [
-			`{minLength/maxLength} inconsistent bounds <${minLength}> > <${maxLength}>`
-		];
+			return minLength === undefined || maxLength === undefined || minLength <= maxLength || [
+				`{minLength/maxLength} inconsistent bounds <${minLength}> > <${maxLength}>`
+			];
 
-	})(constraints);
+		}),
+		test(({ languageIn: accepted = [], hasLanguage: required = [] }) => {
+
+			const unmatched = accepted.length === 0 ? []
+				: required.filter(range => !accepted.some(admitted => overlaps(range, admitted)));
+
+			return unmatched.length === 0 || [
+				`{hasLanguage/languageIn} required ranges <${unmatched}> not matched by any accepted range`
+			];
+
+		})
+	)(constraints);
 
 }
 
 /**
- * Reports whether a dictionary shape narrows an inherited one.
+ * Tells whether a dictionary shape narrows an inherited one.
  *
  * Tests the override relation without building the merged shape, so that an incompatible extension is told apart from
  * a legitimate refinement before either is committed to: a shape narrows the inherited one where it leaves neither
- * length bound wider, adds no language range the inherited shape omits, keeps its per-tag arity, and yields a
- * consistent set of merged constraints.
+ * length bound wider, adds no language range the inherited shape omits, drops no required one, keeps its per-tag
+ * arity, and yields a consistent set of merged constraints, so that the merged shape still admits some value.
  *
  * @param target The overriding shape
  * @param source The inherited shape
@@ -112,8 +125,8 @@ export function narrowsDictionary(target: DictionaryShape, source: DictionarySha
  * Merges a dictionary shape with an inherited one.
  *
  * Yields the single shape an extending member is validated against, combining the inherited constraints with the
- * overriding ones: length bounds accumulate, the accepted language ranges intersect, and `uniqueLang` carries through
- * from whichever shape states it.
+ * overriding ones: length bounds accumulate, the accepted language ranges intersect, the required ones add up, and
+ * `uniqueLang` carries through from whichever shape states it, so that an arity the parent fixes is never lost.
  *
  * @param target The overriding shape
  * @param source The inherited shape
@@ -152,7 +165,7 @@ export function mergeDictionary(target: DictionaryShape, source: DictionaryShape
  */
 function narrows(target: DictionaryShape, source: DictionaryShape, merged: DictionaryConstraints): Optional<Trace> {
 
-	const { languageIn: accepted } = source;
+	const { languageIn: accepted, hasLanguage: required = [] } = source;
 
 	return all<DictionaryShape>(
 		test(({ uniqueLang }) => {
@@ -181,11 +194,21 @@ function narrows(target: DictionaryShape, source: DictionaryShape, merged: Dicti
 			// a range the parent omits would be intersected away, leaving the state wider than the shape admits,
 			// so a widened set is rejected outright as with the bounds
 
-			return languageIn === undefined || accepted === undefined
-				|| languageIn.every(v => accepted.includes(v))
-				|| [
-					`{languageIn} unexpected ranges [${languageIn.filter(v => !accepted.includes(v))}]`
-				];
+			const unexpected = languageIn === undefined || accepted === undefined ? []
+				: languageIn.filter(v => !accepted.includes(v));
+
+			return unexpected.length === 0 || [
+				`{languageIn} unexpected ranges [${unexpected}]`
+			];
+
+		}),
+		test(({ hasLanguage }) => {
+
+			const missing = hasLanguage === undefined ? [] : required.filter(v => !hasLanguage.includes(v));
+
+			return missing.length === 0 || [
+				`{hasLanguage} missing required ranges [${missing}]`
+			];
 
 		}),
 		() => checkDictionary(merged) // post-merge constraint consistency
@@ -203,7 +226,7 @@ function narrows(target: DictionaryShape, source: DictionaryShape, merged: Dicti
  */
 function merge(target: DictionaryShape, source: DictionaryShape): DictionaryConstraints {
 
-	const { languageIn: accepted } = source;
+	const { languageIn: accepted, hasLanguage: required } = source;
 
 	return {
 
@@ -220,8 +243,27 @@ function merge(target: DictionaryShape, source: DictionaryShape): DictionaryCons
 
 		languageIn: target.languageIn !== undefined && accepted !== undefined
 			? target.languageIn.filter(v => accepted.includes(v))
-			: target.languageIn ?? accepted
+			: target.languageIn ?? accepted,
+
+		// conjunctive: hasLanguage — union
+
+		hasLanguage: target.hasLanguage !== undefined && required !== undefined
+			? [...new Set([...target.hasLanguage, ...required])]
+			: target.hasLanguage ?? required
 
 	};
+
+}
+
+/**
+ * Tells whether two basic language ranges may be matched by a single tag.
+ *
+ * Either range may be the wildcard or a subtag prefix of the other, so `en` overlaps `en-US` but `de` misses `deu`.
+ */
+function overlaps(x: TagRange, y: TagRange): boolean {
+
+	const [a, b] = [x.toLowerCase(), y.toLowerCase()];
+
+	return a === "*" || b === "*" || a === b || a.startsWith(`${b}-`) || b.startsWith(`${a}-`);
 
 }

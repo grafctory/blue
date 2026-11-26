@@ -44,6 +44,47 @@ describe("checkDictionary", () => {
 
 	});
 
+	describe("hasLanguage/languageIn", () => {
+
+		// a required range is satisfiable where some tag matches both it and an accepted range, that is where
+		// either range is a prefix of the other, the wildcard overlapping every range
+
+		it.each<[string, readonly string[], readonly string[]]>([
+			["an identical range", ["en"], ["en"]],
+			["a required range narrower than the accepted one", ["en"], ["en-US"]],
+			["a required range wider than the accepted one", ["en-US"], ["en"]],
+			["a range differing only in case", ["en"], ["EN-us"]],
+			["a wildcard required range", ["fr"], ["*"]],
+			["a wildcard accepted range", ["*"], ["en-US"]],
+			["several ranges each overlapping one accepted range", ["en-GB", "fr", "de"], ["en", "fr"]]
+		])("returns undefined for %s", async (_label, languageIn, hasLanguage) => {
+
+			expect(checkDictionary({ languageIn, hasLanguage })).toBeUndefined();
+
+		});
+
+		it.each<[string, readonly string[], readonly string[]]>([
+			["a disjoint range", ["fr"], ["en"]],
+			["a range sharing only a string prefix", ["de"], ["deu"]],
+			["sibling subtags", ["en-GB"], ["en-US"]],
+			["one range among several unmatched", ["en", "fr"], ["en", "de"]]
+		])("returns trace for %s", async (_label, languageIn, hasLanguage) => {
+
+			expect(checkDictionary({ languageIn, hasLanguage }))
+				.toContainEqual(expect.stringContaining("{hasLanguage/languageIn}"));
+
+		});
+
+		it("returns undefined when either constraint is missing or empty", async () => {
+
+			expect(checkDictionary({ hasLanguage: ["en"] })).toBeUndefined();
+			expect(checkDictionary({ languageIn: ["fr"] })).toBeUndefined();
+			expect(checkDictionary({ languageIn: [], hasLanguage: ["en"] })).toBeUndefined();
+
+		});
+
+	});
+
 });
 
 describe("narrowsDictionary", () => {
@@ -103,6 +144,39 @@ describe("narrowsDictionary", () => {
 		expect(narrowsDictionary(
 			dictionary({ languageIn: ["en", "fr"] }),
 			dictionary({ languageIn: ["en"] })
+		)).toBeDefined();
+
+	});
+
+	it("accepts a child adding required ranges", async () => {
+
+		expect(narrowsDictionary(
+			dictionary({ hasLanguage: ["en", "fr"] }),
+			dictionary({ hasLanguage: ["en"] })
+		)).toBeUndefined();
+
+	});
+
+	it("accepts a child inheriting required ranges", async () => {
+
+		expect(narrowsDictionary(dictionary(), dictionary({ hasLanguage: ["en"] }))).toBeUndefined();
+
+	});
+
+	it("rejects a child dropping required ranges", async () => {
+
+		expect(narrowsDictionary(
+			dictionary({ hasLanguage: ["fr"] }),
+			dictionary({ hasLanguage: ["en", "fr"] })
+		)).toContainEqual(expect.stringContaining("{hasLanguage}"));
+
+	});
+
+	it("rejects a child narrowing languageIn below an inherited required range", async () => {
+
+		expect(narrowsDictionary(
+			dictionary({ languageIn: ["fr"] }),
+			dictionary({ languageIn: ["en", "fr"], hasLanguage: ["en"] })
 		)).toBeDefined();
 
 	});
@@ -253,6 +327,42 @@ describe("mergeDictionary", () => {
 
 	});
 
+	describe("hasLanguage", () => {
+
+		it("inherits source hasLanguage when target has none", async () => {
+
+			expect(mergeDictionary(dictionary(), dictionary({ hasLanguage: ["en"] })).hasLanguage)
+				.toEqual(["en"]);
+
+		});
+
+		it("keeps target hasLanguage when source has none", async () => {
+
+			expect(mergeDictionary(dictionary({ hasLanguage: ["en"] }), dictionary()).hasLanguage)
+				.toEqual(["en"]);
+
+		});
+
+		it("keeps a target hasLanguage adding to source", async () => {
+
+			expect(mergeDictionary(
+				dictionary({ hasLanguage: ["en", "fr"] }),
+				dictionary({ hasLanguage: ["en"] })
+			).hasLanguage).toEqual(["en", "fr"]);
+
+		});
+
+		it("rejects a target hasLanguage dropping source ranges", async () => {
+
+			expect(() => mergeDictionary(
+				dictionary({ hasLanguage: ["fr"] }),
+				dictionary({ hasLanguage: ["en"] })
+			)).toThrow(RangeError);
+
+		});
+
+	});
+
 	describe("uniqueLang", () => {
 
 		it("inherits a unique-tagged parent when the child omits it", async () => {
@@ -295,6 +405,15 @@ describe("mergeDictionary", () => {
 
 			expect(merged.minLength).toBe(5);
 			expect(merged.maxLength).toBe(5);
+
+		});
+
+		it("rejects merged hasLanguage no merged languageIn range could match", async () => {
+
+			expect(() => mergeDictionary(
+				dictionary({ hasLanguage: ["en"] }),
+				dictionary({ languageIn: ["fr"] })
+			)).toThrow(RangeError);
 
 		});
 

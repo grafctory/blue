@@ -376,6 +376,8 @@ export type ResourceConstraints = {
 	 * slash. Patterns may be absolute or root-relative; root-relative patterns match absolute IRIs, ignoring the
 	 * origin. A `/*` wildcard standing alone on the root path admits every identifier under the origin, at any depth.
 	 *
+	 * The pattern binds only the identifier a resource states, so a resource stating no identifier is accepted.
+	 *
 	 * **Inheritance** — only the trailing `/*` wildcard admits narrowing: a child may replace `/*` with more specific
 	 * segments (for example, `/products/*` to `/products/{id}/reviews/{rid}`), provided the fixed prefix matches.
 	 * All other cases require exact equality; a mismatch is reported as an error.
@@ -398,7 +400,7 @@ export type ResourceConstraints = {
 	 * Allowed resource {@link Id identifiers} (closed enumeration).
 	 *
 	 * When specified, resource identifiers must be members of this list. IRIs must be absolute. Empty arrays are
-	 * ignored.
+	 * ignored. The list binds only the identifier a resource states, so a resource stating no identifier is accepted.
 	 *
 	 * **Inheritance** — child may only drop allowed identifiers.
 	 *
@@ -413,6 +415,9 @@ export type ResourceConstraints = {
 	 *
 	 * When specified, the identifier must equal every listed value, so a shape listing two or more admits no resource
 	 * at all. IRIs must be absolute. Empty arrays are ignored.
+	 *
+	 * A resource stating no identifier is accepted, where SHACL would reject it as matching no listed value. A member
+	 * ranging over values is held to its own `hasValue` even where it carries none, as an absent value never matches.
 	 *
 	 * **Inheritance** — child may only add required identifiers.
 	 *

@@ -64,6 +64,12 @@ describe("factories", () => {
 
 			});
 
+			it("accepts the required language constraint", async () => {
+
+				expect(dictionary({ hasLanguage: ["en"] }).hasLanguage).toEqual(["en"]);
+
+			});
+
 			describe("combined", () => {
 
 				it("accepts multiple constraints", async () => {
@@ -92,6 +98,12 @@ describe("factories", () => {
 				it("rejects contradictory length bounds", async () => {
 
 					expect(() => dictionary({ minLength: 10, maxLength: 5 })).toThrow(RangeError);
+
+				});
+
+				it("rejects required ranges no accepted tag could match", async () => {
+
+					expect(() => dictionary({ languageIn: ["fr"], hasLanguage: ["en"] })).toThrow(RangeError);
 
 				});
 

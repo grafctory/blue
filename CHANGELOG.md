@@ -10,6 +10,11 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.16.0](https://github.com/grafctory/blue/compare/v0.15.1...HEAD)
 
+### Added
+
+- Add the `hasLanguage` constraint to `dictionary()`, requiring a localised value to carry content in each listed
+  language range; ranges that no tag admitted by `languageIn` could match are rejected as the shape is built
+
 ## [0.15.1](https://github.com/grafctory/blue/compare/v0.15.0...v0.15.1) - 2026-11-24
 
 ### Changed

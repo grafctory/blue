@@ -114,17 +114,19 @@ import { assemble } from "./assembler.js";
  * Where a {@link resource!ResourceShape} extends the shapes it lists as `parents`, localised members are merged
  * according to the following rules. The *child* is the extending shape; the *parent* is the inherited one.
  *
- * | Field        | Override Rule                                                              |
- * | ------------ | -------------------------------------------------------------------------- |
- * | `kind`       | Cannot be overridden                                                       |
- * | `minLength`  | Child may only raise the minimum length                                    |
- * | `maxLength`  | Child may only lower the maximum length                                    |
- * | `languageIn` | Child may only drop accepted ranges                                        |
- * | `uniqueLang` | Child may add but not drop; an inherited constraint always carries through |
+ * | Field         | Override Rule                                                              |
+ * | ------------- | -------------------------------------------------------------------------- |
+ * | `kind`        | Cannot be overridden                                                       |
+ * | `minLength`   | Child may only raise the minimum length                                    |
+ * | `maxLength`   | Child may only lower the maximum length                                    |
+ * | `languageIn`  | Child may only drop accepted ranges                                        |
+ * | `hasLanguage` | Child may only add required ranges                                         |
+ * | `uniqueLang`  | Child may add but not drop; an inherited constraint always carries through |
  *
  * **Cross-field validation**
  *
  * - merged `minLength` must be ≤ merged `maxLength`
+ * - every merged `hasLanguage` range must be matchable by some tag the merged `languageIn` admits
  *
  * @see {@link https://www.w3.org/TR/json-ld11/#language-maps JSON-LD 1.1 § 9.8 Language Maps}
  * @see {@link https://www.w3.org/TR/rdf11-concepts/#dfn-language-tagged-string RDF 1.1 § 3.3 Literals}
@@ -143,8 +145,8 @@ export type DictionaryShape = DictionaryConstraints & {
 /**
  * Constraints accepted by the {@link dictionary} shape factory.
  *
- * Bounds the content a tag may carry and the languages the map may key it by. Length bounds are matched against each
- * string separately, so a value is held to them whatever language it is stated in.
+ * Bounds the content a tag may carry, the languages the map may key it by, and the languages it must cover. Length
+ * bounds are matched against each string separately, so a value is held to them whatever language it is stated in.
  *
  * @see {@link https://www.w3.org/TR/shacl/#core-components-string SHACL § 4.4 String-based Constraint Components}
  */
@@ -204,6 +206,29 @@ export type DictionaryConstraints = {
 	 * @see {@link https://www.rfc-editor.org/rfc/rfc4647.html RFC 4647 - Matching of Language Tags}
 	 */
 	readonly languageIn?: readonly TagRange[];
+
+	/**
+	 * Required language ranges.
+	 *
+	 * When specified, every listed {@link TagRange} must be matched under RFC 4647 basic filtering by a tag carrying
+	 * some content, so that `en` is satisfied by an `en-US` entry and `*` by any entry at all. Empty arrays are ignored.
+	 *
+	 * An absent value never satisfies the constraint, so a member stating required ranges must carry a map whatever
+	 * cardinality it states. Ranges that no tag admitted by {@link languageIn} could match are rejected at build time.
+	 *
+	 * **Inheritance** — child may only add required ranges.
+	 *
+	 * @defaultValue `undefined` (no required languages)
+	 *
+	 * @remarks
+	 *
+	 * SHACL defines no single constraint component requiring a language, but the constraint is still mappable: each
+	 * range maps to `sh:qualifiedValueShape [ sh:languageIn ( range ) ] ; sh:qualifiedMinCount 1`.
+	 *
+	 * @see {@link https://www.w3.org/TR/shacl/#QualifiedValueShapeConstraintComponent SHACL § 4.7.3 sh:qualifiedValueShape}
+	 * @see {@link https://www.rfc-editor.org/rfc/rfc4647.html RFC 4647 - Matching of Language Tags}
+	 */
+	readonly hasLanguage?: readonly TagRange[]
 
 }
 

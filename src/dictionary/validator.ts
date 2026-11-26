@@ -26,7 +26,7 @@
 
 import { isArray, isObject, isString, opt as fold, type Optional } from "@grafctory/core";
 import { isTag, isTagRange, matchTag, type Tag } from "@grafctory/core/language";
-import { all, array, fail, length, object, pass, type Trace, type Validator } from "@grafctory/core/trace";
+import { all, array, fail, length, object, pass, test, type Trace, type Validator } from "@grafctory/core/trace";
 import { isAtomic } from "@grafctory/qest/model";
 import type { Scope } from "../value/validator.js";
 import { type DictionaryShape } from "./index.js";
@@ -40,6 +40,9 @@ import { type DictionaryShape } from "./index.js";
  * carries a single string where the shape states
  * {@link dictionary!DictionaryConstraints.uniqueLang | uniqueLang} and an array of strings otherwise; a value stated at
  * the other arity is rejected as a malformed map rather than as a broken constraint.
+ *
+ * A required language with no entry in any map is reported against the value set as a whole, since no tag carries it.
+ * The set fails such a constraint even when empty, so a member requiring languages must always carry a map.
  *
  * @param values The values to validate
  * @param shape The shape the values are matched against
@@ -68,7 +71,7 @@ export function validateDictionary(values: readonly unknown[], shape: Dictionary
 
 		case "model":
 
-			return model(shape)(values);
+			return model()(values);
 
 	}
 
@@ -80,23 +83,43 @@ export function validateDictionary(values: readonly unknown[], shape: Dictionary
 		minLength,
 		maxLength,
 
-		languageIn
+		languageIn,
+		hasLanguage
 
 	}: DictionaryShape): Validator<readonly unknown[]> {
 
-		return tagged(uniqueLang, isTag, "invalid tag",
+		return all(
 
-			(tag, content) => all(
-				length(minLength, maxLength),
-				accepts(tag, languageIn)
-			)(content),
+			covers(uniqueLang, hasLanguage),
 
-			(tag, content) => all(
-				array(length(minLength, maxLength)),
-				accepts(tag, languageIn)
-			)(content)
+			array((value: unknown) => !isObject(value) ? ["{kind} expected <dictionary> value"]
+
+				: object(([tag, text]: readonly [string, unknown]) => !isTag(tag) ? [{ [tag]: ["invalid tag"] }]
+					: fold(entry(tag, text), trace => [{ [tag]: trace }])
+				)(value)
+
+			)
 
 		);
+
+
+		/**
+		 * Holds the content of a tag to the stated arity, then to the length and language constraints; content stated
+		 * at the other arity is rejected as malformed rather than as a broken constraint.
+		 */
+		function entry(tag: Tag, text: unknown): Optional<Trace> {
+
+			return uniqueLang === true
+
+				? isString(text)
+					? all(length(minLength, maxLength), accepts(tag, languageIn))(text)
+					: ["expected string value"]
+
+				: isArray<string>(text, isString)
+					? all(array(length(minLength, maxLength)), accepts(tag, languageIn))(text)
+					: ["expected string array value"];
+
+		}
 
 	}
 
@@ -104,7 +127,7 @@ export function validateDictionary(values: readonly unknown[], shape: Dictionary
 	 * The form alone: a localised member is asked for coalesced, as the atomic placeholder, or structurally, as a map
 	 * naming the tag ranges wanted. Per-tag arity follows the shape, so a map entry asks for the value and no more.
 	 */
-	function model({}: DictionaryShape): Validator<readonly unknown[]> {
+	function model(): Validator<readonly unknown[]> {
 
 		return array((value: unknown) => isAtomic(value) ? undefined
 
@@ -122,35 +145,30 @@ export function validateDictionary(values: readonly unknown[], shape: Dictionary
 
 
 	/**
-	 * Builds a validator enforcing the form of every language map in a set, holding each entry to the stated arity.
-	 *
-	 * Reports a value that is not a language map as a `{kind}` violation, and a key `admits` turns down or an entry
-	 * stated at the other per-tag arity as an entry violation keyed by the key; every violation is keyed by the index
-	 * of the map carrying it in the validated set. A surviving entry is handed to `unique` or to `stacked`, according
-	 * to the arity the shape states; left out, either admits whatever the form itself admits.
+	 * Requires every listed range to be matched by a tag carrying content at the stated arity, in any map of the set.
+	 * Absent values and empty maps match nothing, so a violation concerns the whole set and leads the report.
 	 */
-	function tagged(
+	function covers(
 		uniqueLang: undefined | boolean,
-		admits: (key: string) => boolean,
-		invalid: string,
-		unique: (tag: Tag, content: string) => Optional<Trace> = () => undefined,
-		stacked: (tag: Tag, content: readonly string[]) => Optional<Trace> = () => undefined
+		hasLanguage: Optional<readonly string[]>
 	): Validator<readonly unknown[]> {
 
-		return array((value: unknown) => !isObject(value) ? ["{kind} expected <dictionary> value"]
+		return test(values => {
 
-			: object(([tag, text]: readonly [string, unknown]) =>
-				!admits(tag) ? [{ [tag]: [invalid] }]
-					: uniqueLang === true
-						? isString(text)
-							? fold(unique(tag, text), trace => [{ [tag]: trace }])
-							: [{ [tag]: ["expected string value"] }]
-						: isArray<string>(text, isString)
-							? fold(stacked(tag, text), trace => [{ [tag]: trace }])
-							: [{ [tag]: ["expected string array value"] }]
-			)(value)
+			const tags = values.filter(value => isObject(value)).flatMap(map => Object.entries(map)
+				.filter(([tag, text]) => isTag(tag) && (uniqueLang === true ? isString(text)
+					: isArray<string>(text, isString) && text.length > 0
+				))
+				.map(([tag]) => tag)
+			);
 
-		);
+			const unmatched = (hasLanguage ?? []).filter(range => !tags.some(tag => matchTag(tag, range)));
+
+			return unmatched.length === 0 || [
+				`{hasLanguage} missing entries for required ranges [${unmatched.join(", ")}]`
+			];
+
+		});
 
 	}
 
