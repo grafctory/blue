@@ -1,6 +1,6 @@
 {
   "name": "@grafctory/blue",
-  "version": "0.15.1",
+  "version": "0.16.0",
   "description": "Declarative blueprints for model-driven linked data processing.",
   "keywords": [
     "typescript",
