@@ -24,12 +24,14 @@
  * whose value varies by language takes one member rather than one per language.
  *
  * > [!IMPORTANT]
- * > Contradictory constraints are rejected as the shape is built, so a shape that exists admits at least one value:
- * > stating `minLength` above `maxLength` throws a {@link @grafctory/core!TraceError | TraceError}.
+ * > Contradictory constraints are rejected as the shape is built, so a shape that exists admits at least one value.
+ * > Stating `minLength` above `maxLength` throws a {@link @grafctory/core!TraceError | TraceError}, and so does
+ * > requiring a language that `languageIn` rules out, since no map could then satisfy both constraints.
  *
  * How many strings a tag carries is fixed by {@link DictionaryConstraints.uniqueLang | uniqueLang}: a unique-tagged
  * shape gives every tag a single string, and any other gives every tag an array. A member ranging over a dictionary
- * carries the map whole, never in an array, whatever cardinality it states.
+ * carries the map whole, never in an array, whatever cardinality it states. A map carrying no text under any tag
+ * counts as no value, so a required localised member stating an empty map fails its cardinality.
  *
  * The tag-keyed map is the form a value is stored and submitted in. A localised member additionally *coalesces* under
  * language negotiation when retrieved, at the same per-tag arity: the value may be retrieved as the negotiated content
@@ -99,7 +101,8 @@ import { assemble } from "./assembler.js";
  * shape gives every tag a single string, and any other gives every tag an array. The map is a value set in its own
  * right, so a member carries it whole, never in an array, whatever the bounds of the enclosing {@link value!Range}
  * admit: those bounds count the values of the other branches of a two-natured range, which a resource carries in
- * place of the map and never beside it.
+ * place of the map and never beside it. A map carrying no text under any tag counts as no value, so a required
+ * member stating one fails its minimum cardinality, as if the value had been left out.
  *
  * **Negotiation**
  *
@@ -166,7 +169,7 @@ export type DictionaryConstraints = {
 	 *
 	 * @see {@link https://www.w3.org/TR/shacl/#UniqueLangConstraintComponent SHACL § 4.4.5 sh:uniqueLang}
 	 */
-	readonly uniqueLang?: boolean;
+	readonly uniqueLang?: boolean
 
 	/**
 	 * Minimum string length in characters.
@@ -177,7 +180,7 @@ export type DictionaryConstraints = {
 	 *
 	 * @see {@link https://www.w3.org/TR/shacl/#MinLengthConstraintComponent SHACL § 4.4.1 sh:minLength}
 	 */
-	readonly minLength?: number;
+	readonly minLength?: number
 
 	/**
 	 * Maximum string length in characters.
@@ -188,7 +191,7 @@ export type DictionaryConstraints = {
 	 *
 	 * @see {@link https://www.w3.org/TR/shacl/#MaxLengthConstraintComponent SHACL § 4.4.2 sh:maxLength}
 	 */
-	readonly maxLength?: number;
+	readonly maxLength?: number
 
 	/**
 	 * Allowed language ranges.
@@ -205,7 +208,7 @@ export type DictionaryConstraints = {
 	 * @see {@link https://www.w3.org/TR/shacl/#LanguageInConstraintComponent SHACL § 4.4.4 sh:languageIn}
 	 * @see {@link https://www.rfc-editor.org/rfc/rfc4647.html RFC 4647 - Matching of Language Tags}
 	 */
-	readonly languageIn?: readonly TagRange[];
+	readonly languageIn?: readonly TagRange[]
 
 	/**
 	 * Required language ranges.
@@ -213,17 +216,16 @@ export type DictionaryConstraints = {
 	 * When specified, every listed {@link TagRange} must be matched under RFC 4647 basic filtering by a tag carrying
 	 * some content, so that `en` is satisfied by an `en-US` entry and `*` by any entry at all. Empty arrays are ignored.
 	 *
-	 * An absent value never satisfies the constraint, so a member stating required ranges must carry a map whatever
-	 * cardinality it states. Ranges that no tag admitted by {@link languageIn} could match are rejected at build time.
+	 * The constraint holds the entries of a map that is given and leaves presence to the member cardinality, so an
+	 * optional member left out, or stating a map with no content, satisfies it. Ranges that no tag admitted by
+	 * {@link languageIn} could match are rejected at build time, before any value is ever held to them.
 	 *
 	 * **Inheritance** — child may only add required ranges.
 	 *
+	 * > [!NOTE]
+	 * > SHACL has no native equivalent: each range maps to a qualified value shape requiring one matching entry.
+	 *
 	 * @defaultValue `undefined` (no required languages)
-	 *
-	 * @remarks
-	 *
-	 * SHACL defines no single constraint component requiring a language, but the constraint is still mappable: each
-	 * range maps to `sh:qualifiedValueShape [ sh:languageIn ( range ) ] ; sh:qualifiedMinCount 1`.
 	 *
 	 * @see {@link https://www.w3.org/TR/shacl/#QualifiedValueShapeConstraintComponent SHACL § 4.7.3 sh:qualifiedValueShape}
 	 * @see {@link https://www.rfc-editor.org/rfc/rfc4647.html RFC 4647 - Matching of Language Tags}

@@ -42,7 +42,7 @@ import { type DictionaryShape } from "./index.js";
  * the other arity is rejected as a malformed map rather than as a broken constraint.
  *
  * A required language with no entry in any map is reported against the value set as a whole, since no tag carries it.
- * The set fails such a constraint even when empty, so a member requiring languages must always carry a map.
+ * An empty set states no map and satisfies such a constraint, leaving presence to the cardinality of the member.
  *
  * @param values The values to validate
  * @param shape The shape the values are matched against
@@ -90,7 +90,7 @@ export function validateDictionary(values: readonly unknown[], shape: Dictionary
 
 		return all(
 
-			covers(uniqueLang, hasLanguage),
+			covers(),
 
 			array((value: unknown) => !isObject(value) ? ["{kind} expected <dictionary> value"]
 
@@ -112,12 +112,44 @@ export function validateDictionary(values: readonly unknown[], shape: Dictionary
 			return uniqueLang === true
 
 				? isString(text)
-					? all(length(minLength, maxLength), accepts(tag, languageIn))(text)
+					? all(length(minLength, maxLength), accepts(tag))(text)
 					: ["expected string value"]
 
 				: isArray<string>(text, isString)
-					? all(array(length(minLength, maxLength)), accepts(tag, languageIn))(text)
+					? all(array(length(minLength, maxLength)), accepts(tag))(text)
 					: ["expected string array value"];
+
+		}
+
+		/**
+		 * Requires every listed range to be matched by a tag carrying content at the stated arity, in any map of the
+		 * set. An empty set states no map and passes; any violation concerns the whole set, so it leads the report.
+		 */
+		function covers(): Validator<readonly unknown[]> {
+
+			return test(values => {
+
+				const tags = values.filter(value => isObject(value)).flatMap(map => Object.entries(map)
+					.filter(([tag, text]) => isTag(tag) && (uniqueLang === true ? isString(text)
+						: isArray<string>(text, isString) && text.length > 0
+					))
+					.map(([tag]) => tag)
+				);
+
+				const unmatched = (hasLanguage ?? []).filter(range => !tags.some(tag => matchTag(tag, range)));
+
+				return values.length === 0 || unmatched.length === 0 || [
+					`{hasLanguage} missing entries for required ranges [${unmatched.join(", ")}]`
+				];
+
+			});
+
+		}
+
+		function accepts(tag: Tag): Validator<unknown> {
+
+			return languageIn === undefined || languageIn.some(range => matchTag(tag, range)) ? pass
+				: fail([`{languageIn} unsupported tag for allowed languages [${languageIn.join(", ")}]`]);
 
 		}
 
@@ -140,42 +172,6 @@ export function validateDictionary(values: readonly unknown[], shape: Dictionary
 				)(value)
 
 		);
-
-	}
-
-
-	/**
-	 * Requires every listed range to be matched by a tag carrying content at the stated arity, in any map of the set.
-	 * Absent values and empty maps match nothing, so a violation concerns the whole set and leads the report.
-	 */
-	function covers(
-		uniqueLang: undefined | boolean,
-		hasLanguage: Optional<readonly string[]>
-	): Validator<readonly unknown[]> {
-
-		return test(values => {
-
-			const tags = values.filter(value => isObject(value)).flatMap(map => Object.entries(map)
-				.filter(([tag, text]) => isTag(tag) && (uniqueLang === true ? isString(text)
-					: isArray<string>(text, isString) && text.length > 0
-				))
-				.map(([tag]) => tag)
-			);
-
-			const unmatched = (hasLanguage ?? []).filter(range => !tags.some(tag => matchTag(tag, range)));
-
-			return unmatched.length === 0 || [
-				`{hasLanguage} missing entries for required ranges [${unmatched.join(", ")}]`
-			];
-
-		});
-
-	}
-
-	function accepts(tag: Tag, languageIn: Optional<readonly string[]>): Validator<unknown> {
-
-		return languageIn === undefined || languageIn.some(range => matchTag(tag, range)) ? pass
-			: fail([`{languageIn} unsupported tag for allowed languages [${languageIn.join(", ")}]`]);
 
 	}
 

@@ -12,8 +12,14 @@ to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Added
 
-- Add the `hasLanguage` constraint to `dictionary()`, requiring a localised value to carry content in each listed
-  language range; ranges that no tag admitted by `languageIn` could match are rejected as the shape is built
+- Add the `hasLanguage` constraint to `dictionary()`, requiring a localised value, where one is given, to carry
+  content in each listed language range; an optional member left out still validates, and ranges that no tag
+  admitted by `languageIn` could match are rejected as the shape is built, before any value is validated
+
+### Fixed
+
+- Read a language map carrying no content as an absent value in resource validation, so a required localised member
+  stating `{}` or `{ en: [] }` now fails its `minCount` instead of passing as a value it does not carry
 
 ## [0.15.1](https://github.com/grafctory/blue/compare/v0.15.0...v0.15.1) - 2026-11-24
 

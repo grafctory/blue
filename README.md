@@ -500,6 +500,8 @@ This controlled subset is specified by:
 	class
 - [value constraints](https://www.w3.org/TR/shacl/#core-components-others) (`sh:in`, `sh:hasValue`) for enumerations and
 	required values
+- [shape-based constraints](https://www.w3.org/TR/shacl/#core-components-shape) limited to `sh:qualifiedValueShape`
+	with `sh:qualifiedMinCount`, for requiring localised text to be stated in given languages
 - [logical constraints](https://www.w3.org/TR/shacl/#core-components-logical) limited to `sh:xone` typed unions on
 	members, matched exactly-one on write and relaxed to at-least-one (`sh:or`) on read; the `sh:not`, `sh:and`, and
 	`sh:or` shape combinators are not supported for authoring

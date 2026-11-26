@@ -442,11 +442,9 @@ describe("validateDictionary", () => {
 
 		});
 
-		// an absent value never matches, as with the hasValue constraint of the other shapes
+		it("accepts empty values", async () => {
 
-		it("rejects empty values", async () => {
-
-			expect(validateDictionary([], dictionary({ hasLanguage: ["en"] }))).toEqual([missing]);
+			expect(validateDictionary([], dictionary({ hasLanguage: ["en"] }))).toBeUndefined();
 
 		});
 

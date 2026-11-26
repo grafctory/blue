@@ -470,6 +470,37 @@ describe("validateResource", () => {
 
 		});
 
+		it("holds a required localised member carrying no content to its lower bound", async () => {
+
+			const shape = resource({ label: required(dictionary()) });
+
+			expect(JSON.stringify(at(validateResource([{ label: {} }], shape), "0", "label")))
+				.toContain("{minCount}");
+
+			expect(JSON.stringify(at(validateResource([{ label: { en: [] } }], shape), "0", "label")))
+				.toContain("{minCount}");
+
+		});
+
+		it("reads a localised value carrying no content as absent under required languages", async () => {
+
+			const shape = resource({ label: optional(dictionary({ hasLanguage: ["en"] })) });
+
+			expect(validateResource([{}], shape)).toBeUndefined();
+			expect(validateResource([{ label: {} }], shape)).toBeUndefined();
+			expect(validateResource([{ label: { en: [] } }], shape)).toBeUndefined();
+
+		});
+
+		it("holds a localised value carrying content to its required languages", async () => {
+
+			const shape = resource({ label: optional(dictionary({ hasLanguage: ["en"] })) });
+
+			expect(validateResource([{ label: { en: ["hello"] } }], shape)).toBeUndefined();
+			expect(at(validateResource([{ label: { fr: ["bonjour"] } }], shape), "0", "label")).toBeDefined();
+
+		});
+
 		it("reports a unique-tagged localised value stating nothing under a tag as an array", async () => {
 
 			const shape = resource({ label: optional(dictionary({ uniqueLang: true })) });

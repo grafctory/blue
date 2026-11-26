@@ -35,7 +35,7 @@ import {
 	opt as fold,
 	type Optional
 } from "@grafctory/core";
-import { isTagRange } from "@grafctory/core/language";
+import { isTag, isTagRange } from "@grafctory/core/language";
 import { all, array, fail, object, type Trace } from "@grafctory/core/trace";
 import { isReference, isVacuous, type Reference, type Resource } from "@grafctory/qest/state";
 import {
@@ -144,7 +144,7 @@ export function validateResource(values: readonly unknown[], shape: ResourceShap
 	 */
 	function contents(value: unknown, member: Property): Optional<Trace> {
 
-		const { range: { minCount, maxCount, shape: range }, foreign, captive } = member;
+		const { range: { maxCount, shape: range }, foreign, captive } = member;
 
 		// a foreign member is written by the resources it points at, not by the one exposing it
 
@@ -166,26 +166,19 @@ export function validateResource(values: readonly unknown[], shape: ResourceShap
 		// states: a member carries it whole, never in an array and never beside the other values, and the bounds
 		// stated for the member count the other values alone
 
-		const present = value === undefined || isArray(value, []) || nesting && isVacuous(value) ? undefined : value;
+		const present = value === undefined || isArray(value, [])
+		|| nesting && isVacuous(value)
+		|| isBlank(value, branches) ? undefined : value;
 
 		const carried = (present === undefined ? [] : isArray(present) ? present : [present])
 			.filter(element => !(nesting && isVacuous(element)));
 
-		const whole = isLocalised(present, branches, scope);
-
-		const bounds = whole ? undefined : all(
-			(minCount !== undefined && carried.length < minCount)
-			&& fail([`{minCount} expected at least <${minCount}> value(s)`]),
-
-			(maxCount !== undefined && carried.length > maxCount)
-			&& fail([`{maxCount} expected at most <${maxCount}> value(s)`])
-		)(undefined);
-
 		// the arity is reported first, then the values, then the cardinality
 
-		return (whole ? undefined : arity(present, maxCount, branches, scope))
+		return isLocalised(present, branches, scope) ? elements(carried, resolved, captive)
+			: arity(present, maxCount, branches, scope)
 			?? elements(carried, resolved, captive)
-			?? bounds;
+			?? counts(carried.length, member);
 
 	}
 
@@ -324,21 +317,19 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 	 */
 	function template(value: unknown, shape: ResourceShape, depth: Optional<number>): Optional<Trace> {
 
-		if ( !isObject(value) ) { return ["expected <template> value"]; }
+		return !isObject(value) ? ["expected <template> value"]
+			: exhausted(depth) ? ["exceeded maximum nesting depth"]
+				: all(...Object.entries(value).map(([name, asked]) => () => fold(
 
-		if ( exhausted(depth) ) { return ["exceeded maximum nesting depth"]; }
+					!isIdentifier(name) ? ["expected property identifier"]
+						: !Object.hasOwn(shape.members, name) ? ["unknown property path"]
+							: shape.members[name].kind === "property"
+								? slot(asked, shape.members[name], depth)
+								: isAtomic(asked) ? undefined : ["expected <Atomic> placeholder"], // the id/type members
 
-		return all(...Object.entries(value).map(([name, asked]) => () => fold(
+					trace => [{ [name]: trace }]
 
-			!isIdentifier(name) ? ["expected property identifier"]
-				: !Object.hasOwn(shape.members, name) ? ["unknown property path"]
-					: shape.members[name].kind === "property"
-						? slot(asked, shape.members[name], depth)
-						: isAtomic(asked) ? undefined : ["expected <Atomic> placeholder"], // the id/type members
-
-			trace => [{ [name]: trace }]
-
-		)))(undefined);
+				)))(undefined);
 
 	}
 
@@ -415,19 +406,13 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 		retrieval: (contents: unknown) => Optional<Trace>
 	): Optional<Trace> {
 
-		const entries = isObject(value) ? Object.entries(value) : [];
-
-		const constraints = entries.filter(([key]) => isSelector(key));
-
-		const contents = isObject(value)
-			? Object.fromEntries(entries.filter(([key]) => !isSelector(key)))
-			: value;
+		const constraints = isObject(value) ? Object.keys(value).filter(key => isSelector(key)) : [];
 
 		return all(
 
-			() => retrieval(contents),
+			() => retrieval(retrieving(value)),
 
-			...constraints.map(([selector]) => () => [{ [selector]: [refused] }])
+			...constraints.map(selector => () => [{ [selector]: [refused] }])
 
 		)(undefined);
 
@@ -477,8 +462,7 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 		// with no branch reaching a resource, an object keyed by anything but branch indices can only be a locale
 
 		const localised = branches.every(alternative => getShapeTarget(alternative) === undefined)
-			? branches.find((alternative): alternative is DictionaryShape => alternative.kind === "dictionary")
-			: undefined;
+			&& branches.some(alternative => alternative.kind === "dictionary");
 
 		return branches.length > 1
 
@@ -488,10 +472,10 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 			? isAtomic(value)
 				? branches.some(alternative => alternative.kind !== "resource") ? undefined
 					: ["{branches} no branch comes back as a value"]
-				: localised !== undefined && !isObject(value, (_, key) => isBranch(key)) ? locale(value, localised)
+				: localised && !isObject(value, (_, key) => isBranch(key)) ? locale(value)
 					: indexed(value, branches, depth)
 
-			: branch.kind === "dictionary" ? locale(value, branch)
+			: branch.kind === "dictionary" ? locale(value)
 				: placeholder(value, branch, depth);
 
 	}
@@ -537,7 +521,7 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 				isTemplateModel(contents, branches) && isObject(contents)
 					? all(...Object.entries(contents).map(([name, nested]) => () => member(name, nested)))(undefined)
 					: branches.some(branch => branch.kind === "dictionary"
-						? locale(contents, branch) === undefined
+						? locale(contents) === undefined
 						: placeholder(contents, branch, depth) === undefined
 					) ? undefined : ["{branches} no branch admits the placeholder"]
 
@@ -574,26 +558,16 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 	 * a matched tag carries.
 	 *
 	 * @param value The placeholder the slot states
-	 * @param shape The localised shape the slot reaches
 	 */
-	function locale(value: unknown, shape: DictionaryShape): Optional<Trace> {
+	function locale(value: unknown): Optional<Trace> {
 
 		return isAtomic(value) ? undefined
 			: !isObject(value) ? ["{kind} expected <Atomic> or <Locale> placeholder"]
-				: tagged(value, shape);
-
-	}
-
-	/**
-	 * Validates the tags a localised slot wants, each asking for the value a matched tag carries.
-	 */
-	function tagged(value: Record<string, unknown>, {}: DictionaryShape): Optional<Trace> {
-
-		return object(([range, asked]: readonly [string, unknown]) =>
-			!isTagRange(range) ? [{ [range]: ["invalid tag range"] }]
-				: isAtomic(asked) ? undefined
-					: [{ [range]: ["{type} expected <Atomic> value"] }]
-		)(value);
+				: object(([range, asked]: readonly [string, unknown]) =>
+					!isTagRange(range) ? [{ [range]: ["invalid tag range"] }]
+						: isAtomic(asked) ? undefined
+							: [{ [range]: ["{type} expected <Atomic> value"] }]
+				)(value);
 
 	}
 
@@ -674,28 +648,34 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 		const branches = getShapeBranches(member.range.shape);
 		const [branch] = branches;
 
-		if ( branches.length > 1 ) { return model(value, member.range, depth); }
+		if ( branches.length > 1 ) {
 
-		switch ( branch.kind ) {
+			return model(value, member.range, depth);
 
-			case "reference":
-			case "resource": {
+		} else {
 
-				const next = step(depth);
-				const target = branch.kind === "reference" ? eager(branch.target) : branch;
+			switch ( branch.kind ) {
 
-				// a template descends into the resource, while a column resolves against the item as it stands, so
-				// an empty path leaves a link a link, asked for as the identifier naming its target
+				case "reference":
+				case "resource": {
 
-				return isAtomic(value) ? placeholder(value, branch, depth)
-					: Object.keys(value).every(isIdentifier) ? template(value, target, next)
-						: projection(value, branch, next);
+					const next = step(depth);
+					const target = branch.kind === "reference" ? eager(branch.target) : branch;
+
+					// a template descends into the resource, while a column resolves against the item as it stands,
+					// so an empty path leaves a link a link, asked for as the identifier naming its target
+
+					return isAtomic(value) ? placeholder(value, branch, depth)
+						: Object.keys(value).every(isIdentifier) ? template(value, target, next)
+							: projection(value, branch, next);
+
+				}
+
+				default:
+
+					return placeholder(value, branch, depth);
 
 			}
-
-			default:
-
-				return placeholder(value, branch, depth);
 
 		}
 
@@ -713,11 +693,7 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 	 */
 	function projection(value: unknown, shape: Shape, depth: Optional<number>): Optional<Trace> {
 
-		if ( !isObject(value) ) { return ["expected <projection> value"]; }
-
-		if ( exhausted(depth) ) { return ["exceeded maximum nesting depth"]; }
-
-		const probes = new Map<string, Probe>(Object.keys(value)
+		const probes = new Map<string, Probe>((isObject(value) ? Object.keys(value) : [])
 			.filter(isBinding)
 			.map(binding => [binding, decodeProbe(binding)])
 		);
@@ -729,37 +705,47 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 			.filter((target, index, targets) => targets.indexOf(target) !== index)
 		);
 
-		return all(...Object.entries(value).map(([binding, asked]) => () =>
-			fold(column(binding, asked), trace => [{ [binding]: trace }])
-		))(undefined);
+		return !isObject(value) ? ["expected <projection> value"]
+			: exhausted(depth) ? ["exceeded maximum nesting depth"]
+				: all(...Object.entries(value).map(([binding, asked]) => () =>
+					fold(column(binding, asked), trace => [{ [binding]: trace }])
+				))(undefined);
 
 
 		function column(binding: string, asked: unknown): Optional<Trace> {
 
 			const probe = probes.get(binding);
 
-			if ( probe === undefined ) { return ["expected projection binding"]; }
+			if ( probe === undefined ) {
 
-			if ( depth !== undefined && probe.path.length > depth ) { return ["exceeded maximum path length"]; }
+				return ["expected projection binding"];
 
-			if ( plain && probe.pipe.some(isAggregate) ) { return ["disabled aggregate transforms"]; }
+			} else if ( depth !== undefined && probe.path.length > depth ) {
 
-			if ( shared.has(probe.target) ) {
+				return ["exceeded maximum path length"];
+
+			} else if ( plain && aggregate(probe) ) {
+
+				return ["disabled aggregate transforms"];
+
+			} else if ( shared.has(probe.target) ) {
+
 				return [`duplicate projection identifier <${probe.target}>`];
-			}
 
-			const range = effective(shape, probe);
+			} else {
 
-			if ( isString(range) ) { return [range]; } // the path the shape cannot resolve
+				const range = effective(shape, probe);
 
 			// a column holds one value per row, so it neither asks for a collection nor narrows one; a collection
 			// reached below it, through a nested template, carries its own constraints as any other does
 
-			return isArray(asked) ? ["unexpected array in projection value"]
+				return isString(range) ? [range] // the path the shape cannot resolve
+					: isArray(asked) ? ["unexpected array in projection value"]
+						: unconstrained(asked, "unexpected constraint in a projection column",
+							contents => model(contents, range, depth)
+						);
 
-				: unconstrained(asked, "unexpected constraint in a projection column",
-					contents => model(contents, range, depth)
-				);
+			}
 
 		}
 
@@ -782,13 +768,11 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 
 		const next = step(depth);
 
-		if ( constraints.length === 0 ) { return undefined; } // a collection stated without constraints
-
-		if ( exhausted(next) ) { return ["exceeded maximum nesting depth"]; }
-
-		return all(...constraints.map(([selector, asked]) => () =>
-			fold(operator(selector, asked), trace => [{ [selector]: trace }])
-		))(undefined);
+		return constraints.length === 0 ? undefined // a collection stated without constraints
+			: exhausted(next) ? ["exceeded maximum nesting depth"]
+				: all(...constraints.map(([selector, asked]) => () =>
+					fold(operator(selector, asked), trace => [{ [selector]: trace }])
+				))(undefined);
 
 
 		function operator(selector: string, asked: unknown): Optional<Trace> {
@@ -797,13 +781,29 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 
 			const probe = decodeProbe(selector);
 
-			if ( next !== undefined && probe.path.length > next ) { return ["exceeded maximum path length"]; }
+			if ( next !== undefined && probe.path.length > next ) {
 
-			if ( plain && probe.pipe.some(isAggregate) ) { return ["disabled aggregate transforms"]; }
+				return ["exceeded maximum path length"];
 
-			const range = effective(member.range.shape, probe);
+			} else if ( plain && aggregate(probe) ) {
 
-			if ( isString(range) ) { return [range]; } // the path the shape cannot resolve
+				return ["disabled aggregate transforms"];
+
+			} else {
+
+				const range = effective(member.range.shape, probe);
+
+				return isString(range) ? [range] // the path the shape cannot resolve
+					: operand(asked, probe, range);
+
+			}
+
+		}
+
+		/**
+		 * Validates the operand a constraint states against what its operator tests.
+		 */
+		function operand(asked: unknown, probe: Probe, range: Range): Optional<Trace> {
 
 			const branches = getShapeBranches(range.shape);
 
@@ -860,17 +860,11 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 	 */
 	function bound(value: unknown, branches: readonly Shape[]): Optional<Trace> {
 
-		if ( branches.length === 0 ) { return undefined; } // nothing to filter against, the bound is immaterial
-
-		if ( branches.length > 1 ) {
-
-			return verdict(branches.filter(branch => checkBound(value, branch) === undefined), "bound");
-
-		}
-
 		const [branch] = branches;
 
-		return checkBound(value, branch);
+		return branches.length === 0 ? undefined // nothing to filter against, the bound is immaterial
+			: branches.length > 1 ? verdict(branches.filter(branch => checkBound(value, branch) === undefined), "bound")
+				: checkBound(value, branch);
 
 	}
 
@@ -879,29 +873,14 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 	 */
 	function keywords(value: unknown, branches: readonly Shape[]): Optional<Trace> {
 
-		if ( branches.length === 0 ) { return undefined; } // nothing to search, the string is immaterial
-
-		if ( branches.length > 1 ) {
-
-			return branches.some(branch => keywords(value, [branch]) === undefined) ? undefined
-				: ["{branches} no branch admits the search"];
-
-		}
-
 		const [branch] = branches;
 
-		switch ( branch.kind ) {
-
-			case "string":
-			case "dictionary":
-
-				return isString(value) ? undefined : ["expected string value"];
-
-			default:
-
-				return [`unsupported constraint for <${branch.kind}> value`];
-
-		}
+		return branches.length === 0 ? undefined // nothing to search, the string is immaterial
+			: branches.length > 1 ? branches.some(branch => keywords(value, [branch]) === undefined) ? undefined
+					: ["{branches} no branch admits the search"]
+				: branch.kind === "string" || branch.kind === "dictionary"
+					? isString(value) ? undefined : ["expected string value"]
+					: [`unsupported constraint for <${branch.kind}> value`];
 
 	}
 
@@ -910,17 +889,17 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 	 */
 	function options(value: unknown, branches: readonly Shape[]): Optional<Trace> {
 
-		if ( branches.length === 0 ) { return undefined; } // nothing to match, the options are immaterial
+		const [branch] = branches;
 
-		if ( branches.length > 1 ) {
+		if ( branches.length === 0 ) {
+
+			return undefined; // nothing to match, the options are immaterial
+
+		} else if ( branches.length > 1 ) {
 
 			return isArray(value) ? array<unknown>(single)(value) : single(value);
 
-		}
-
-		const [branch] = branches;
-
-		if ( branch.kind === "dictionary" ) {
+		} else if ( branch.kind === "dictionary" ) {
 
 			// a tag map, or a plain string standing for the strings the map carries, stated singly or as a set;
 			// the two forms are never mixed within one set
@@ -931,11 +910,13 @@ export function validateTemplate(values: readonly unknown[], shape: ResourceShap
 						? ["mixed plain and tagged options"]
 						: [`unsupported constraint for <${branch.kind}> value`];
 
-		}
+		} else {
 
-		return isArray(value)
-			? array((value: unknown) => checkOption(value, branch))(value)
-			: checkOption(value, branch);
+			return isArray(value)
+				? array((value: unknown) => checkOption(value, branch))(value)
+				: checkOption(value, branch);
+
+		}
 
 
 		/**
@@ -1078,11 +1059,18 @@ export function validateResult(values: readonly unknown[], {
 	 */
 	function contents(value: unknown, member: Property, requested: unknown): Optional<Trace> {
 
-		const { range: { minCount, maxCount, shape: range } } = member;
+		const { range: { minCount, shape: range } } = member;
 
 		const branches = getShapeBranches(range);
 
 		const present = value === undefined || isArray(value, []) ? undefined : value;
+
+		// a localised member asked for by the atomic placeholder comes back as the text negotiation settled on rather
+		// than as the map, at the arity the shape states per tag; the tags are asked for as a map of language ranges
+
+		const negotiated = isAtomic(requested)
+			? branches.find((branch): branch is DictionaryShape => branch.kind === "dictionary")
+			: undefined;
 
 		if ( present === undefined ) {
 
@@ -1090,16 +1078,7 @@ export function validateResult(values: readonly unknown[], {
 				? [`{minCount} expected at least <${minCount}> value(s)`]
 				: undefined;
 
-		}
-
-		// a localised member asked for by the atomic placeholder comes back as the text negotiation settled on rather
-		// than as the map, at the arity the shape states per tag
-
-		const negotiated = branches
-			.flatMap(branch => branch.kind === "dictionary" ? [branch] : [])
-			.find(branch => plain(requested, branch));
-
-		if ( negotiated !== undefined ) {
+		} else if ( negotiated !== undefined ) {
 
 			// the text folds into the values of the other variants, so a value is admitted where either admits it
 
@@ -1110,16 +1089,18 @@ export function validateResult(values: readonly unknown[], {
 				: valued(present, member, others, requested) === undefined ? undefined
 					: coalesced;
 
+		} else {
+
+			// a localised member comes back as it is carried: one map, whole and never in an array, whatever bounds it
+			// states of the other values, and the bounds count those other values alone
+
+			// a map is matched against the range as it stands, the template narrowing the other values alone
+
+			return isLocalised(present, branches, "state")
+				? validateShape([present], eager(range))
+				: valued(present, member, branches, requested);
+
 		}
-
-		// a localised member comes back as it is carried: one map, whole and never in an array, whatever bounds it
-		// states of the other values, and the bounds count those other values alone
-
-		// a map is matched against the range as it stands, the template narrowing the other values alone
-
-		return isLocalised(present, branches, "state")
-			? validateShape([present], eager(range))
-			: valued(present, member, branches, requested);
 
 	}
 
@@ -1149,9 +1130,7 @@ export function validateResult(values: readonly unknown[], {
 	 */
 	function exhaustive(requested: unknown, branches: readonly Shape[]): boolean {
 
-		const asked = isObject(requested)
-			? Object.fromEntries(Object.entries(requested).filter(([key]) => !isSelector(key)))
-			: requested;
+		const asked = retrieving(requested);
 
 		const keyed = isObject(asked) && Object.keys(asked).length > 0 && Object.keys(asked).every(isBranch);
 		const alternatives = keyed ? Object.values(asked) : [asked];
@@ -1159,19 +1138,6 @@ export function validateResult(values: readonly unknown[], {
 		const reached = new Set(alternatives.flatMap(alternative => getModelBranches(alternative, branches) ?? []));
 
 		return branches.length === 1 || reached.size === branches.length;
-
-	}
-
-	/**
-	 * Reports whether a placeholder asked a localised shape for the text negotiation settles on.
-	 *
-	 * The atomic placeholder stands for that text, which is how a localised member is asked for where the tags are not
-	 * wanted; the tags are stated as a map of language ranges instead. The arity the text comes back at follows the
-	 * shape rather than the placeholder.
-	 */
-	function plain(requested: unknown, {}: DictionaryShape): boolean {
-
-		return isAtomic(requested);
 
 	}
 
@@ -1248,20 +1214,11 @@ export function validateResult(values: readonly unknown[], {
 
 		const keys = Object.keys(fields);
 		const indexed = keys.length > 0 && keys.some(key => !isIdentifier(key));
+		const malformed = keys.filter(key => !isBranch(key));
 
-		if ( indexed ) {
-
-			const malformed = keys.filter(key => !isBranch(key));
-
-			if ( malformed.length > 0 ) {
-				return all(...malformed.map(key => () => [{ [key]: ["expected a branch key"] }]))(undefined);
-			}
-
-			return verdict(branches.filter(admits => keys.some(key => fits(value, admits, fields[key]))), "value");
-
-		}
-
-		return verdict(branches.filter(admits => fits(value, admits, requested)), "value");
+		return !indexed ? verdict(branches.filter(admits => fits(value, admits, requested)), "value")
+			: malformed.length > 0 ? all(...malformed.map(key => () => [{ [key]: ["expected a branch key"] }]))(undefined)
+				: verdict(branches.filter(admits => keys.some(key => fits(value, admits, fields[key]))), "value");
 
 	}
 
@@ -1294,21 +1251,6 @@ export function validateResult(values: readonly unknown[], {
 	}
 
 	/**
-	 * Reports the cardinality bounds the values a member came back with break.
-	 */
-	function counts(count: number, { range: { minCount, maxCount } }: Property): Optional<Trace> {
-
-		return all(
-			(minCount !== undefined && count < minCount)
-			&& fail([`{minCount} expected at least <${minCount}> value(s)`]),
-
-			(maxCount !== undefined && count > maxCount)
-			&& fail([`{maxCount} expected at most <${maxCount}> value(s)`])
-		)(undefined);
-
-	}
-
-	/**
 	 * Resolves the template a nested resource was requested through.
 	 *
 	 * A collection carries its constraints alongside the keys retrieving its values, so the per-item template is the
@@ -1317,9 +1259,7 @@ export function validateResult(values: readonly unknown[], {
 	 */
 	function nested(requested: unknown): Template {
 
-		const element = isObject(requested)
-			? Object.fromEntries(Object.entries(requested).filter(([key]) => !isSelector(key)))
-			: requested;
+		const element = retrieving(requested);
 
 		return isTemplate(element) ? element : {};
 
@@ -1422,6 +1362,34 @@ function arity(
 }
 
 /**
+ * Reports the cardinality bounds of a member that the count of the values it carries breaks.
+ */
+function counts(count: number, { range: { minCount, maxCount } }: Property): Optional<Trace> {
+
+	return all(
+		(minCount !== undefined && count < minCount)
+		&& fail([`{minCount} expected at least <${minCount}> value(s)`]),
+
+		(maxCount !== undefined && count > maxCount)
+		&& fail([`{maxCount} expected at most <${maxCount}> value(s)`])
+	)(undefined);
+
+}
+
+/**
+ * Sets the constraints a slot states apart from the keys retrieving its values.
+ *
+ * @returns The object `value` less its constraint keys, or `value` itself where it is not an object
+ */
+function retrieving(value: unknown): unknown {
+
+	return isObject(value)
+		? Object.fromEntries(Object.entries(value).filter(([key]) => !isSelector(key)))
+		: value;
+
+}
+
+/**
  * Holds the value a marker states to the single absolute IRI it must be.
  */
 function marked(value: unknown): Optional<Trace> {
@@ -1467,6 +1435,25 @@ function isLocalised(value: unknown, branches: readonly Shape[], scope: Scope): 
 
 	return !isArray(value) && branches.some(branch =>
 		branch.kind === "dictionary" && validateShape([value], branch, { scope }) === undefined
+	);
+
+}
+
+/**
+ * Checks whether a value is a language map carrying no content, which states nothing as an omitted value does.
+ *
+ * A tag carrying an empty array is blank only where the dictionary states its texts as arrays; where each tag holds
+ * a single text, the empty array is malformed, reported by the dictionary validation rather than read as absent.
+ *
+ * @param value The value to test
+ * @param branches The alternatives the member ranges over
+ *
+ * @returns `true` where `value` is a map one of the dictionary `branches` reads as carrying no text under any tag
+ */
+function isBlank(value: unknown, branches: readonly Shape[]): boolean {
+
+	return isObject(value) && branches.some(branch => branch.kind === "dictionary"
+		&& Object.entries(value).every(([tag, text]) => isTag(tag) && branch.uniqueLang !== true && isArray(text, []))
 	);
 
 }
